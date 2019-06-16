@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>TwitBoot</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- <link rel="stylesheet" href=""> -->
+	<style>
+		*,*::before, *::after {
+			margin: 0;
+			padding: 0;
+		}
+
+		html,body {
+			font-family: sans-serif;
+			background-color: #fefefe;
+			min-height: 100vh;
+			height: 100%;
+		}
+	   twit-app {
+	     display: block;
+	     background-color: #ffffff;
+	     border-bottom: solid 1px #eeeeee;
+	   }
+	   twit-app header {
+	     height: 48px;
+	     display: flex;
+	     justify-content: center;
+	     align-items: center;
+	   }
+	   twit-app img {
+	     height: 42px;
+	     width: 42px;
+	     display: block;
+	   }
+	</style>
+	<script type="text/javascript">
+		(() => {
+			if('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('./service-worker.js', { scope: "/" })
+					.then(reg => {
+						console.log('Registration successful')
+					}).catch(console.log);
+			}
+		})();
+	</script>
+</head>
+<body>
+
+	<script src="./config.js" async defer></script>
+	<twit-app unresolved>
+		<twit-header slot="header"></twit-header>
+	</twit-app>
+
+	<script type="module" src="./src/components/twit-app.js"></script>
+</body>
+</html>
