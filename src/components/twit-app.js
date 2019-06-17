@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import "./layout/navigation/twit-header.js";
+import "./layout/navigation/twit-footer.js";
 import "./data/twit-store.js";
 import "./data/twit-auth.js";
 import "./data/twit-login.js";
@@ -16,6 +17,7 @@ class TwitApp extends LitElement {
             content: ""
         };
         this.tweets = [];
+        this.tab = "home";
     }
 
     static get styles() {
@@ -82,6 +84,7 @@ class TwitApp extends LitElement {
             tweets: {
                 type: Array
             },
+            tab: String
         };
     }
 
@@ -195,31 +198,32 @@ class TwitApp extends LitElement {
        <section>
        <slot name="header"></slot>
        ${
-           !this.logged ? html`
-           <twit-auth></twit-auth>
-           <twit-login
-           @user-logged="${this.handleLogin}">
-           </twit-login>
-           ` : html `
-           <h1>Hi, ${this.user.email}</h1>
-           <button @click="${this.subscribe}">Subscribe</button>
-           <h1>Tweets: </h1>
-           <ul>
-           ${this.tweets.map(tweet => html`
-               <li class="${tweet.user == this.user.uid ? 'own' : ''}"><strong>${tweet.email} Said :</strong>
-               ${tweet.content} - ${this.getDate(tweet.date)}
-               </li>`)}
-           </ul>
-           <footer>
-           <form @submit='${this.handleTweet}'>
-           <input type="text" placeholder="Post a new tweet..."
-           .value="${this.tweet.content}"
-           @input="${e => this.tweet = e.target.value}">
-           <button type="submit">Send</button>
-           </form>
-           </footer>
-           `
+            !this.logged ? html`
+                <twit-auth></twit-auth>
+                <twit-login
+                @user-logged="${this.handleLogin}">
+                </twit-login>
+            ` : (this.tab == "home") ? html `
+                <h1>Hi, ${this.user.email}</h1>
+                <button @click="${this.subscribe}">Subscribe</button>
+                <h1>Tweets: </h1>
+                <ul>
+                ${this.tweets.map(tweet => html`
+                    <li class="${tweet.user == this.user.uid ? 'own' : ''}"><strong>${tweet.email} Said :</strong>
+                    ${tweet.content} - ${this.getDate(tweet.date)}
+                    </li>`)}
+                </ul>
+                <footer>
+                <form @submit='${this.handleTweet}'>
+                <input type="text" placeholder="Post a new tweet..."
+                .value="${this.tweet.content}"
+                @input="${e => this.tweet = e.target.value}">
+                <button type="submit">Send</button>
+                </form>
+                </footer>
+            ` : html ``
        }
+       <slot name="footer" tab="${this.tab}"></slot>
        </section>
        `;
    }
