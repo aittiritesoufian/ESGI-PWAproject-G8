@@ -28,7 +28,7 @@ class TwitApp extends LitElement {
         * {  box-sizing: border-box }
         footer {
             position: fixed;
-            bottom: 0;
+            bottom: 9%;
             width: 100%;
         }
         footer form {
@@ -218,12 +218,12 @@ class TwitApp extends LitElement {
                     </li>`)}
                 </ul>
                 <footer>
-                <form @submit='${this.handleTweet}'>
-                <input type="text" placeholder="Post a new tweet..."
-                .value="${this.tweet.content}"
-                @input="${e => this.tweet.content = e.target.value}">
-                <button type="submit">Send</button>
-                </form>
+                    <form @submit='${this.handleTweet}'>
+                        <input type="text" placeholder="Post a new tweet..."
+                        .value="${this.tweet.content}"
+                        @input="${e => this.tweet.content = e.target.value}">
+                        <button type="submit">Send</button>
+                    </form>
                 </footer>
             ` : html ``
        }

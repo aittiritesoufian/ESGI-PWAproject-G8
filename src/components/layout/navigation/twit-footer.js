@@ -20,6 +20,12 @@ class TwitFooter extends LitElement {
                 background-color: #fff;
                 border-bottom:solid 1px #eeeeee;
             }
+            footer {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                height:9%;
+            }
             footer > ul {
                 display: flex;
                 justify-content: space-between;
@@ -42,7 +48,7 @@ class TwitFooter extends LitElement {
 
 	render(){
 		return html`
-			<footer slot="footer">
+			<footer>
                 <ul>
                     <li @click="${e => {this.tab = ""; this.handleTab()}}">Home</li>
                     <li @click="${e => {this.tab = "profil"; this.handleTab()}}">Profil</li>
