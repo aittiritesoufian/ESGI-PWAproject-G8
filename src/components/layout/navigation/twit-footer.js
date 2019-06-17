@@ -4,6 +4,13 @@ class TwitFooter extends LitElement {
 
 	constructor(){
         super();
+        this.tab = "";
+    }
+    
+    static get properties(){
+        return {
+            tab: String
+        };
     }
 
     static get styles(){
@@ -26,13 +33,20 @@ class TwitFooter extends LitElement {
         `;
     }
 
+    handleTab(e) {
+        // console.log(this.tab);
+        this.dispatchEvent(new CustomEvent('change-tab', {
+            detail: this.tab
+        }));
+    }
+
 	render(){
 		return html`
 			<footer slot="footer">
                 <ul>
-                    <li @click="${() => tab = 'home'}">Home</li>
-                    <li @click="${() => tab = 'profil'}">Profil</li>
-                    <li @click="${() => tab = 'new'}">New Tweet</li>
+                    <li @click="${e => {this.tab = ""; this.handleTab()}}">Home</li>
+                    <li @click="${e => {this.tab = "profil"; this.handleTab()}}">Profil</li>
+                    <li @click="${e => {this.tab = "new"; this.handleTab()}}">New Tweet</li>
                 </ul>
             </footer>
 		`;

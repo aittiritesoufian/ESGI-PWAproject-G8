@@ -17,7 +17,7 @@ class TwitApp extends LitElement {
             content: ""
         };
         this.tweets = [];
-        this.tab = "home";
+        this.tab = "";
     }
 
     static get styles() {
@@ -190,6 +190,10 @@ class TwitApp extends LitElement {
        }
    }
 
+   changeTab(e) {
+       this.tab = e.detail;
+   }
+
    render(){
        return html`
        <twit-store
@@ -203,7 +207,7 @@ class TwitApp extends LitElement {
                 <twit-login
                 @user-logged="${this.handleLogin}">
                 </twit-login>
-            ` : (this.tab == "home") ? html `
+            ` : (this.tab == "") ? html `
                 <h1>Hi, ${this.user.email}</h1>
                 <button @click="${this.subscribe}">Subscribe</button>
                 <h1>Tweets: </h1>
@@ -217,13 +221,13 @@ class TwitApp extends LitElement {
                 <form @submit='${this.handleTweet}'>
                 <input type="text" placeholder="Post a new tweet..."
                 .value="${this.tweet.content}"
-                @input="${e => this.tweet = e.target.value}">
+                @input="${e => this.tweet.content = e.target.value}">
                 <button type="submit">Send</button>
                 </form>
                 </footer>
             ` : html ``
        }
-       <slot name="footer" tab="${this.tab}"></slot>
+       <twit-footer @change-tab="${this.changeTab}"></twit-footer>
        </section>
        `;
    }
