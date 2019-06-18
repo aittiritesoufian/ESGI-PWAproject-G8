@@ -33,22 +33,9 @@ class TwitElement extends LitElement {
     firstUpdated(){
         if(this.id){
             firebase.initializeApp(document.config);
-            this.firestore = firebase.firestore().collection("tweets").doc(this.id).onSnapshot(ref => {
-                // ref.docChanges().forEach( change => {
-                //     const { newIndex, oldIndex, doc, type } = change;
-    
-                //     if(type == "added") {
-                //         this.data = [...this.data, doc.data() ];
-                //         this.dispatchEvent(new CustomEvent('child-changed', { detail: this.data }));
-                //     } else if( type == 'removed') {
-                //         this.data.splice(oldIndex, 1);
-                //         this.dispatchEvent(new CustomEvent('child-changed', { detail: this.data }));
-                //     }
-                // })
-                
-
-                // TODO : HERE CONSTRUCT THE CURRENT OBJECT WITH FIREBASE REF.
-            });
+            const tweet = this.firestore = firebase.firestore().collection("tweets").doc(this.id);
+            this = [...this, tweet.data() ];
+            console.log(this);
         }
     }
 
@@ -62,7 +49,6 @@ class TwitElement extends LitElement {
 
 	render(){
 		return html`
-			<>
                 <header>
                     <a href="/profil/${this.author.slug}">
                         <img src="${this.author.avatar}" />
@@ -83,7 +69,6 @@ class TwitElement extends LitElement {
                     <TwitButton @click="${this.handleRetweet}" class="retweet"></TwitButton>
                     <TwitButton @click="${this.handleComment}" class="comment"></TwitButton>
                 </footer>
-            </>
 		`;
 	}
 }

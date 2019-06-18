@@ -113,7 +113,7 @@ class TwitApp extends LitElement {
     }
 
     addTweet(e){
-        this.tweets = e.detail;
+        this.tweet = e.detail;
         setTimeout(() => {
             window.scrollTo(0, document.body.scrollHeight);
         }, 0);
