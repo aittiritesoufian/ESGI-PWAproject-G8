@@ -74,7 +74,10 @@ class TwitElement extends LitElement {
         this.init();
 		return html`
                 <header>
-                    
+                    <a href="/profil/${this.author.slug}">
+                        <img src="${this.author.avatar}" />
+                        <h1>${this.author.name}</h1>
+                    </a>
                 </header>
                 <main>
                     ${
