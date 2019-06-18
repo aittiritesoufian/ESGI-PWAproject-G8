@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import "./layout/navigation/twit-header.js";
 import "./layout/navigation/twit-footer.js";
+import "./layout/blocs/twit-element.js";
 import "./data/twit-store.js";
 import "./data/twit-auth.js";
 import "./data/twit-login.js";
@@ -214,8 +215,8 @@ class TwitApp extends LitElement {
                 <h1>Tweets: </h1>
                 <ul>
                 ${this.tweets.map(tweet => html`
-                    ${console.log(tweet.id)}
-                    <li><TwitElement id="${tweet.id}"></TwitElement></li>
+                    ${console.log(tweet)}
+                    <twit-element id="${tweet.id}"></twit-element>
                 `)}
                 </ul>
                 <footer>
