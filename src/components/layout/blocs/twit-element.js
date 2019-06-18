@@ -39,6 +39,18 @@ class TwitElement extends LitElement {
         }
     }
 
+    handleLike() {
+        // TODO: add a like to the current tweet
+    }
+
+    handleRetweet() {
+        // TODO: publish a new tweet with tweetReference in place of content
+    }
+
+    handleComment() {
+        // TODO: print a component comment to let user add comment to this tweet
+    }
+
     static get styles(){
         return css`
             :host {

@@ -113,7 +113,8 @@ class TwitApp extends LitElement {
     }
 
     addTweet(e){
-        this.tweet = e.detail;
+        this.tweets = e.detail;
+        console.log(this.tweets);
         setTimeout(() => {
             window.scrollTo(0, document.body.scrollHeight);
         }, 0);
@@ -213,9 +214,9 @@ class TwitApp extends LitElement {
                 <h1>Tweets: </h1>
                 <ul>
                 ${this.tweets.map(tweet => html`
-                    <li class="${tweet.user == this.user.uid ? 'own' : ''}"><strong>${tweet.email} Said :</strong>
-                    ${tweet.content} - ${this.getDate(tweet.date)}
-                    </li>`)}
+                    ${console.log(tweet.id)}
+                    <li><TwitElement id="${tweet.id}"></TwitElement></li>
+                `)}
                 </ul>
                 <footer>
                     <form @submit='${this.handleTweet}'>
