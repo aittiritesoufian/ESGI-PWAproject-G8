@@ -90,9 +90,9 @@ class TwitElement extends LitElement {
                     }
                 </main>
                 <footer>
-                    <TwitButton @click="${this.handleLike}" class="like"></TwitButton>
-                    <TwitButton @click="${this.handleRetweet}" class="retweet"></TwitButton>
-                    <TwitButton @click="${this.handleComment}" class="comment"></TwitButton>
+                    <twit-button @click="${this.handleLike}" class="like"></twit-button>
+                    <twit-button @click="${this.handleRetweet}" class="retweet"></twit-button>
+                    <twit-button @click="${this.handleComment}" class="comment"></twit-button>
                 </footer>
 		`;
 	}
