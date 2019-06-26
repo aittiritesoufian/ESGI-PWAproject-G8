@@ -11,7 +11,7 @@ class TwitElement extends LitElement {
         // this.content = "";
         // this.tweetReference = "";
         // this.date = "";
-        // this.author = {};
+        this.author = {};
         // this.attach = 0;
         // this.likes = [];
         // this.comments = 0;
@@ -24,7 +24,7 @@ class TwitElement extends LitElement {
             // content: String,
             // tweetReference: String,
             // date: Date,
-            // author: Object,
+            author: Object,
             // attach: boolean,
             // likes: {
             //     type: Array
@@ -34,18 +34,25 @@ class TwitElement extends LitElement {
         };
     }
 
-    init(){
-        console.log('init');
+    firstUpdated(){
+        // console.log('init a tweet');
         if(this.id){
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
+                    firebase.firestore().collection("users").doc(this.tweet.author).get().then(doc2 => {
+                        if (doc2.exists) {
+                            this.author = doc2.data();
+                        }
+                    }).catch(function (error) {
+                        console.log("Error getting Author:", error);
+                    });
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
                 }
             }).catch(function(error) {
-                console.log("Error getting document:", error);
+                console.log("Error getting Tweet:", error);
             });
         }
     }
@@ -71,7 +78,6 @@ class TwitElement extends LitElement {
     }
 
 	render(){
-        this.init();
 		return html`
                 <header>
                     <a href="/profil/${this.author.slug}">
@@ -82,10 +88,9 @@ class TwitElement extends LitElement {
                 <main>
                     ${
                         this.tweet.content !== "" ? html`
-                            ${console.log(this.tweet)}
                             <p>${this.tweet.content}</p>
                         `: html`
-                            <TwitElement id="${this.tweet.tweetReference}"></TwitElement>
+                            <twit-element id="${this.tweet.tweetReference}"></twit-element>
                         `
                     }
                 </main>

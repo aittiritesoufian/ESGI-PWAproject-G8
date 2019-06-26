@@ -115,7 +115,7 @@ class TwitApp extends LitElement {
 
     addTweet(e){
         this.tweets = e.detail;
-        console.log(this.tweets);
+        console.log("addTweet");
         setTimeout(() => {
             window.scrollTo(0, document.body.scrollHeight);
         }, 0);
@@ -153,9 +153,9 @@ class TwitApp extends LitElement {
         if(this.tweet == {}) return;
         const database  = firebase.firestore();
         database.collection('tweets').add({
-            content: this.tweet,
+            content: this.tweet.content,
             date: new Date().getTime(),
-            user: this.user.uid,
+            author: this.user.uid,
             email: this.user.email
         });
         this.tweet = {};
@@ -215,7 +215,7 @@ class TwitApp extends LitElement {
                 <h1>Tweets: </h1>
                 <ul>
                 ${this.tweets.map(tweet => html`
-                    ${console.log(tweet)}
+                    ${console.log("map")}
                     <twit-element id="${tweet.id}"></twit-element>
                 `)}
                 </ul>
