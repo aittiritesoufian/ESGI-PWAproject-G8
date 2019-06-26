@@ -8,34 +8,19 @@ class TwitElement extends LitElement {
 	constructor(){
         super();
         this.id = "";
-        // this.content = "";
-        // this.tweetReference = "";
-        // this.date = "";
         this.author = {};
-        // this.attach = 0;
-        // this.likes = [];
-        // this.comments = 0;
         this.tweet = {};
     }
     
     static get properties(){
         return {
             id: String,
-            // content: String,
-            // tweetReference: String,
-            // date: Date,
             author: Object,
-            // attach: boolean,
-            // likes: {
-            //     type: Array
-            // },
-            // comments: Number,
             tweet: Object
         };
     }
 
     firstUpdated(){
-        // console.log('init a tweet');
         if(this.id){
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
