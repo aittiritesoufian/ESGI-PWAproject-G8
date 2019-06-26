@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import "./layout/navigation/twit-header.js";
 import "./layout/navigation/twit-footer.js";
 import "./layout/blocs/twit-element.js";
+import "./layout/blocs/twit-new.js";
 import "./data/twit-store.js";
 import "./data/twit-auth.js";
 import "./data/twit-login.js";
@@ -27,21 +28,6 @@ class TwitApp extends LitElement {
             display: block;
         }
         * {  box-sizing: border-box }
-        footer {
-            position: fixed;
-            bottom: 9%;
-            width: 100%;
-        }
-        footer form {
-            display: flex;
-            justify-content: space-between;
-            background-color: #ffffff;
-            padding: 0.5rem 1rem;
-            width: 100%;
-        }
-        footer form input {
-            width: 100%;
-        }
         .own {
             text-align:right;
         }
@@ -148,19 +134,6 @@ class TwitApp extends LitElement {
         // }
     }
 
-    handleTweet(e){
-        e.preventDefault();
-        if(this.tweet == {}) return;
-        const database  = firebase.firestore();
-        database.collection('tweets').add({
-            content: this.tweet.content,
-            date: new Date().getTime(),
-            author: this.user.uid,
-            email: this.user.email
-        });
-        this.tweet = {};
-    }
-
     getDate(timestamp) {
         const date = new Date(timestamp);
        // Hours part from the timestamp
@@ -172,9 +145,9 @@ class TwitApp extends LitElement {
 
        // Will display time in 10:30:23 format
        return `${hours}:${minutes.substr(-2)}:${seconds.substr(-2)}`;
-   }
+    }
 
-   subscribe() {
+    subscribe() {
         if (('serviceWorker' in navigator) || ('PushManager' in window)) {
            Notification.requestPermission()
            .then(function(result) {
@@ -190,13 +163,13 @@ class TwitApp extends LitElement {
          // Do something with the granted permission.
         });
        }
-   }
+    }
 
-   changeTab(e) {
+    changeTab(e) {
        this.tab = e.detail;
-   }
+    }
 
-   render(){
+    render(){
        return html`
        <twit-store
        collection="tweets"
@@ -209,30 +182,25 @@ class TwitApp extends LitElement {
                 <twit-login
                 @user-logged="${this.handleLogin}">
                 </twit-login>
-            ` : (this.tab == "") ? html `
+            ` : (this.tab == "profil") ? html `
+                
+            ` : (this.tab == "new") ? html`
+                <twit-new author="${this.user.uid}"></twit-new>
+            ` : html `
                 <h1>Hi, ${this.user.email}</h1>
                 <button @click="${this.subscribe}">Subscribe</button>
                 <h1>Tweets: </h1>
                 <ul>
                 ${this.tweets.map(tweet => html`
-                    ${console.log("map")}
                     <twit-element id="${tweet.id}"></twit-element>
                 `)}
                 </ul>
-                <footer>
-                    <form @submit='${this.handleTweet}'>
-                        <input type="text" placeholder="Post a new tweet..."
-                        .value="${this.tweet.content}"
-                        @input="${e => this.tweet.content = e.target.value}">
-                        <button type="submit">Send</button>
-                    </form>
-                </footer>
-            ` : html ``
+            `
        }
        <twit-footer @change-tab="${this.changeTab}"></twit-footer>
        </section>
        `;
-   }
+    }
 }
 
 customElements.define('twit-app', TwitApp);
