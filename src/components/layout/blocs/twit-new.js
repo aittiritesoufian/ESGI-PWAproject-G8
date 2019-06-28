@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/storage';
 
 class TwitNew extends LitElement {
 
@@ -27,19 +28,21 @@ class TwitNew extends LitElement {
 
     handleTweet(e) {
         e.preventDefault();
+        // firebase.initializeApp(document.config);
         // if (this.tweet == {}) return;
         // file is in this.file
         //create storage ref
-        var storageRef = firebase.storage().ref('tweets_pic/' + this.author + "/" + this.file.name);
+        const firestorage = firebase.storage();
+        let storageRef = firestorage.ref('tweets_pic/' + this.author + "/" + this.file.name);
 
-        //upload file
-        var task = storageRef.put(this.file);
+        // //upload file
+        let task = storageRef.put(this.file);
 
         //task during upload
         task.on('state_changed',
             function progress(snapshot) {
                 var percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                this.uploader.value = percentage;
+                // this.uploader = percentage;
             },
 
             function error(err) {
@@ -55,8 +58,8 @@ class TwitNew extends LitElement {
         // database.collection('tweets').add({
         //     content: this.content,
         //     date: new Date().getTime(),
-        //     author: this.user.uid,
-        //     email: this.user.email,
+        //     author: this.author.uid,
+        //     email: this.author.email,
         //     attachment: 1
         // });
         // this.tweet = {};
