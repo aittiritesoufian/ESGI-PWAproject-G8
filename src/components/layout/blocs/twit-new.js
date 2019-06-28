@@ -8,7 +8,7 @@ class TwitNew extends LitElement {
 	constructor(){
         super();
         this.id = "";
-        this.author = "";
+        this.author = {};
         this.content = "";
         this.attachment = "";
         this.file = {};
@@ -18,7 +18,7 @@ class TwitNew extends LitElement {
     static get properties(){
         return {
             id: String,
-            author: String,
+            author: Object,
             content: String,
             file:Object,
             attachment: String,
@@ -31,38 +31,56 @@ class TwitNew extends LitElement {
         // firebase.initializeApp(document.config);
         // if (this.tweet == {}) return;
         // file is in this.file
-        //create storage ref
-        const firestorage = firebase.storage();
-        let storageRef = firestorage.ref('tweets_pic/' + this.author + "/" + this.file.name);
+        if (this.file) {
+            //create storage ref
+            const firestorage = firebase.storage();
+            const ref = 'tweets_pic/' + this.author + "/" + this.file.name;
+            let storageRef = firestorage.ref(ref);
 
-        // //upload file
-        let task = storageRef.put(this.file);
+            // //upload file
+            let task = storageRef.put(this.file);
 
-        //task during upload
-        task.on('state_changed',
-            function progress(snapshot) {
-                var percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                // this.uploader = percentage;
-            },
+            //task during upload
+            task.on('state_changed',
+                function progress(snapshot) {
+                    var percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    // this.uploader = percentage;
+                },
 
-            function error(err) {
-                console.log("error occured on upload", err);
-            },
+                function error(err) {
+                    switch (error.code) {
+                        case 'storage/unauthorized':
+                            // User doesn't have permission to access the object
+                            console.log("Error : Unauthorized");
+                            break;
 
-            function complete() {
-                console.log("upload complete");
-            }
-        );
+                        case 'storage/canceled':
+                            // User canceled the upload
+                            console.log("Error : Canceled");
+                            break;
+                        case 'storage/unknown':
+                            // Unknown error occurred, inspect error.serverResponse
+                            console.log("Error : Unknown", err);
+                            break;
+                    }
+                },
 
-        // const database = firebase.firestore();
-        // database.collection('tweets').add({
-        //     content: this.content,
-        //     date: new Date().getTime(),
-        //     author: this.author.uid,
-        //     email: this.author.email,
-        //     attachment: 1
-        // });
-        // this.tweet = {};
+                function complete() {
+                    console.log("upload complete");
+                    const database = firebase.firestore();
+                    database.collection('tweets').add({
+                        content: this.content,
+                        date: new Date().getTime(),
+                        author: this.author,
+                        attachment: ref
+                    });
+                    this.tweet = {};
+                }
+            );
+        }
+        
+
+        
     }
 
     static get styles(){
