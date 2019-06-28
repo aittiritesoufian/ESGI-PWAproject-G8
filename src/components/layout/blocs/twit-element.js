@@ -78,6 +78,11 @@ class TwitElement extends LitElement {
                             <twit-element id="${this.tweet.tweetReference}"></twit-element>
                         `
                     }
+                    ${
+                        this.tweet.attachment ? html`
+                            <twit-pic ref="${this.tweet.attachment}"></twit-pic>
+                        ` : ""
+                    }
                 </main>
                 <footer>
                     <twit-button @click="${this.handleLike}" class="like"></twit-button>

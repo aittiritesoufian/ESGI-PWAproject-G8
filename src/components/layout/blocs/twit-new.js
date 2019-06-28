@@ -36,6 +36,8 @@ class TwitNew extends LitElement {
             const firestorage = firebase.storage();
             const ref = 'tweets_pic/' + this.author + "/" + this.file.name;
             let storageRef = firestorage.ref(ref);
+            const content = this.content;
+            const author = this.author;
 
             // //upload file
             let task = storageRef.put(this.file);
@@ -68,13 +70,13 @@ class TwitNew extends LitElement {
                 function complete() {
                     console.log("upload complete");
                     const database = firebase.firestore();
+                    debugger;
                     database.collection('tweets').add({
-                        content: this.content,
+                        content: content,
                         date: new Date().getTime(),
-                        author: this.author,
+                        author: author,
                         attachment: ref
                     });
-                    this.tweet = {};
                 }
             );
         }
