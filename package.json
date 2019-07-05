@@ -10,8 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "firebase": "^6.0.2",
-    "lit-element": "^2.1.0",
-    "lit-redux-router": "^0.9.5"
+    "lit-element": "^2.1.0"
   },
   "devDependencies": {
     "polymer-cli": "^1.9.9"

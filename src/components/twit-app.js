@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit-element';
-import { connectRouter } from 'lit-redux-router';
 import "./layout/navigation/twit-header.js";
 import "./layout/navigation/twit-footer.js";
 import "./layout/blocs/twit-element.js";
