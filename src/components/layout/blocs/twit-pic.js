@@ -18,17 +18,6 @@ class TwitPic extends LitElement {
         };
     }
 
-    firstUpdated() {
-        if (this.slug) {
-            const firestorage = firebase.storage();
-            firestorage.child(this.ref).getDownloadURL().then(function (url) {
-                this.file = url;
-            }).catch(function (error) {
-                console.log("Error on getting image", error)
-            });
-        }
-    }
-
     static get styles() {
         return css`
             :host {
@@ -39,6 +28,14 @@ class TwitPic extends LitElement {
     }
 
     render() {
+        if (this.ref) {
+            const firestorage = firebase.storage();
+            firestorage.ref(this.ref).getDownloadURL().then((url) => {
+                this.file = url;
+            }).catch((error) => {
+                console.log("Error on getting image", error)
+            });
+        }
         return html`
             <a href="${this.file}">
                 <img src="${this.file}" />

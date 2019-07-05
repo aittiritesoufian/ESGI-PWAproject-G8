@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import "./twit-button.js";
+import "./twit-pic.js";
 
 class TwitElement extends LitElement {
 
