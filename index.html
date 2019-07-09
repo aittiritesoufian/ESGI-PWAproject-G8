@@ -50,9 +50,10 @@
 <body>
 
 	<script src="./config.js" async defer></script>
-
-	<main></main>
-
-	<script src="./src/components/twit-app.js" async defer></script>
+	<twit-app unresolved>
+		<twit-header slot="header"></twit-header>
+	</twit-app>
+	
+	<script type="module" src="./src/components/twit-app.js"></script>
 </body>
 </html>

@@ -1,15 +1,13 @@
-((document, window) => {
-    import { Router } from '@vaadin/router';
-    import "./views/twit-home.js";
-    import "./views/twit-profile.js";
-    import "./views/twit-post.js";
-    
-    window.addEventListener('load', () => {
-        initRouter();
-    });
+import { LitElement, html, css } from 'lit-element';
+import { Router } from '@vaadin/router';
+import "./views/twit-home.js";
+import "./views/twit-profile.js";
+import "./views/twit-post.js";
 
-    function initRouter() {
-        const router = new Router(document.querySelector("main"));
+class TwitApp extends LitElement {
+    
+    initRouter() {
+        const router = new Router(document.querySelector(this));
         router.setRoutes([
             {
                 path: '/',
@@ -31,5 +29,12 @@
             // }
         ]);
     }
-})(document, window);
 
+    render() {
+        window.addEventListener('load', () => {
+            this.initRouter();
+        });
+    }
+}
+
+customElements.define('twit-app', TwitApp);
