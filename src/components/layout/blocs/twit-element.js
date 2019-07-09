@@ -55,14 +55,6 @@ class TwitElement extends LitElement {
         // TODO: print a component comment to let user add comment to this tweet
     }
 
-    static get styles(){
-        return css`
-            :host {
-
-            }
-        `;
-    }
-
 	render(){
 		return html`
                 <header>

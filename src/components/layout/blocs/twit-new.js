@@ -122,7 +122,7 @@ class TwitNew extends LitElement {
 
 	render(){
         return html`
-            <form @submit='${this.handleTweet}'>
+            <form @submit="${this.handleTweet}">
                 <textarea placeholder="Post a new tweet..." @change="${e => this.content = e.target.value}">${this.content}</textarea>
                 <section class="actions">
                     <button type="submit">Send</button>
