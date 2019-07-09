@@ -39,20 +39,13 @@ class TwitFooter extends LitElement {
         `;
     }
 
-    handleTab(e) {
-        // console.log(this.tab);
-        this.dispatchEvent(new CustomEvent('change-tab', {
-            detail: this.tab
-        }));
-    }
-
 	render(){
 		return html`
 			<footer>
                 <ul>
-                    <li @click="${e => {this.tab = ""; this.handleTab()}}">Home</li>
-                    <li @click="${e => {this.tab = "profil"; this.handleTab()}}">Profil</li>
-                    <li @click="${e => {this.tab = "new"; this.handleTab()}}">New Tweet</li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/profil">Profil</a></li>
+                    <li><a href="/post">New Tweet</a></li>
                 </ul>
             </footer>
 		`;

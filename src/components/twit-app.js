@@ -7,19 +7,22 @@ import "./views/twit-post.js";
 class TwitApp extends LitElement {
     
     initRouter() {
-        const router = new Router(document.querySelector(this));
+        const router = new Router(this.shadowRoot);
         router.setRoutes([
             {
                 path: '/',
-                component: 'twit-home'
+                component: 'twit-home',
+                action: () => import("./views/twit-home.js")
             },
             {
-                path: '/profile',
-                component: 'twit-profile'
+                path: '/profil',
+                component: 'twit-profile',
+                action: () => import("./views/twit-profile.js")
             },
             {
                 path: '/post',
-                component: 'twit-post'
+                component: 'twit-post',
+                action: () => import("./views/twit-post.js")
             }
             // {
             //     path: '(.*)',
@@ -34,6 +37,8 @@ class TwitApp extends LitElement {
         window.addEventListener('load', () => {
             this.initRouter();
         });
+        return html`
+        `;
     }
 }
 

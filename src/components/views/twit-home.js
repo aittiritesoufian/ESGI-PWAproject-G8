@@ -162,26 +162,28 @@ class TwitHome extends LitElement {
 
     render() {
         return html`
-        <section>
-            <slot name="header"></slot>
-            ${
-            !this.logged ? html`
-            <twit-auth></twit-auth>
-            <twit-login @user-logged="${this.handleLogin}">
-            </twit-login>
-            ` : html`
-            <h1>Hi, ${this.user.email}</h1>
-            <button @click="${this.subscribe}">Subscribe</button>
-            <h1>Tweets: </h1>
-            <ul>
-                ${this.tweets.map(tweet => html`
-                <twit-element id="${tweet.id}"></twit-element>
-                `)}
-            </ul>
-            `
-                }
-            <twit-footer></twit-footer>
-        </section>
+            <section>
+                <twit-header></twit-header>
+                ${
+                !this.logged ? html`
+                <twit-auth></twit-auth>
+                <twit-login @user-logged="${this.handleLogin}">
+                </twit-login>
+                ` : html`
+                <twit-store collection="tweets" @child-changed="${this.addTweet}">
+                </twit-store>
+                <h1>Hi, ${this.user.email}</h1>
+                <button @click="${this.subscribe}">Subscribe</button>
+                <h1>Tweets: </h1>
+                <ul>
+                    ${this.tweets.map(tweet => html`
+                    <twit-element id="${tweet.id}"></twit-element>
+                    `)}
+                </ul>
+                `
+                    }
+                <twit-footer></twit-footer>
+            </section>
        `;
     }
 }
