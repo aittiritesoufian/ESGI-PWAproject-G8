@@ -26,18 +26,21 @@ class TwitNew extends LitElement {
         };
     }
 
+    firstUpdated() {
+        document.addEventListener('user-logged', (event) => {
+            this.author = event.detail.user.uid;
+        });
+    }
+
     handleTweet(e) {
         e.preventDefault();
-        // firebase.initializeApp(document.config);
-        // if (this.tweet == {}) return;
-        // file is in this.file
-        if (this.file) {
+        if (this.file != {}) {
             //create storage ref
             const firestorage = firebase.storage();
-            const ref = 'tweets_pic/' + this.author + "/" + this.file.name;
+            let ref = 'tweets_pic/' + this.author + "/" + this.file.name;
             let storageRef = firestorage.ref(ref);
-            const content = this.content;
-            const author = this.author;
+            let content = this.content;
+            let author = this.author;
 
             // //upload file
             let task = storageRef.put(this.file);
@@ -70,7 +73,6 @@ class TwitNew extends LitElement {
                 function complete() {
                     console.log("upload complete");
                     const database = firebase.firestore();
-                    debugger;
                     database.collection('tweets').add({
                         content: content,
                         date: new Date().getTime(),
@@ -79,10 +81,15 @@ class TwitNew extends LitElement {
                     });
                 }
             );
+        } else {
+            //if no file, just publish content
+            const database = firebase.firestore();
+            database.collection('tweets').add({
+                content: this.content,
+                date: new Date().getTime(),
+                author: this.author
+            });
         }
-        
-
-        
     }
 
     static get styles(){

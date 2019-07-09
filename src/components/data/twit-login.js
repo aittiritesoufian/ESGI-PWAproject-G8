@@ -24,27 +24,18 @@ class TwitLogin extends LitElement {
         `;
     }
 
-    firstUpdated() {
-        firebase.initializeApp(document.config);
-        firebase.auth().onAuthStateChanged(user => {
-            if(!user) {
-                localStorage.setItem('logged', false);
-                return console.log('logged out');
-            };
-            localStorage.setItem('logged', true);
-            this.dispatchEvent(new CustomEvent("user-logged", { detail: { user }}));
-        });
-    }
-
     handleForm(e) {
         e.preventDefault();
         if(!this.email || !this.password) return console.error('Email or password are empty !');
         firebase.auth().signInWithEmailAndPassword(this.email, this.password)
             .then(user => {
                 console.log('Login successful', user);
-            }).catch(console.log);
-        this.email = "";
-        this.password = "";
+                localStorage.setItem('logged', true);
+                this.dispatchEvent(new CustomEvent("user-logged", { detail: { user } }));
+                this.email = "";
+                this.password = "";
+            })
+            .catch(console.log);
     }
 
     render(){
