@@ -24,7 +24,8 @@ class TwitLogin extends LitElement {
         `;
     }
 
-    firstUpdated(){
+    firstUpdated() {
+        firebase.initializeApp(document.config);
         firebase.auth().onAuthStateChanged(user => {
             if(!user) {
                 localStorage.setItem('logged', false);

@@ -21,7 +21,6 @@ class TwitStore extends LitElement {
     }
 
     firstUpdated(){
-        firebase.initializeApp(document.config);
         this.firestore = firebase.firestore().collection(this.collection).orderBy('date','asc').onSnapshot(ref => {
             ref.docChanges().forEach( change => {
                 const { newIndex, oldIndex, doc, type } = change;
