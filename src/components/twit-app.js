@@ -4,8 +4,14 @@ import firebase from 'firebase/app';
 import "./views/twit-home.js";
 import "./views/twit-profile.js";
 import "./views/twit-post.js";
+import checkConnectivity from './system/connectivity.js';
 
 class TwitApp extends LitElement {
+
+    constructor() {
+        super();
+        this.connection = false;
+    }
     
     initRouter() {
         const router = new Router(this.shadowRoot);
@@ -35,16 +41,24 @@ class TwitApp extends LitElement {
     }
 
     firstUpdated() {
-        firebase.initializeApp(document.config);
-        firebase.auth().onAuthStateChanged(user => {
-            if (!user) {
-                localStorage.setItem('logged', false);
-                return console.log('logged out');
-            };
-            localStorage.setItem('logged', true);
-            document.dispatchEvent(new CustomEvent("user-logged", { detail: { user } }));
-            return console.log('logged');
+        checkConnectivity();
+        document.addEventListener('connection-changed', ({ detail }) => {
+            this.connection = detail;
         });
+        if (this.connection){
+            firebase.initializeApp(document.config);
+            firebase.auth().onAuthStateChanged(user => {
+                if (!user) {
+                    localStorage.setItem('logged', false);
+                    return console.log('logged out');
+                };
+                localStorage.setItem('logged', true);
+                document.dispatchEvent(new CustomEvent("user-logged", { detail: { user } }));
+                return console.log('logged');
+            });
+        } else {
+            // TODO : Offline homepage !
+        }
     }
 
     render() {
