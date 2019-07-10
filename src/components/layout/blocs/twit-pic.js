@@ -24,6 +24,9 @@ class TwitPic extends LitElement {
                 display: block;
             }
             * {  box-sizing: border-box }
+            img {
+                width:100%;
+            }
         `;
     }
 
