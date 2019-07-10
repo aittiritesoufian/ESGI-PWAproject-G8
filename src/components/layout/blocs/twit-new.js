@@ -34,16 +34,22 @@ class TwitNew extends LitElement {
 
     handleTweet(e) {
         e.preventDefault();
-        if (this.file != {}) {
+        //init data for tweet
+        let data = {
+            content: this.content,
+            author: this.author,
+            date: new Date().getTime()
+        }
+        if (this.file.length > 0) {
             //create storage ref
             const firestorage = firebase.storage();
-            let ref = 'tweets_pic/' + this.author + "/" + this.file.name;
+            let ref = 'tweets_pic/' + this.author + "/" + this.file[0].name;
             let storageRef = firestorage.ref(ref);
             let content = this.content;
             let author = this.author;
 
             // //upload file
-            let task = storageRef.put(this.file);
+            let task = storageRef.put(this.file[0]);
 
             //task during upload
             task.on('state_changed',
@@ -72,23 +78,16 @@ class TwitNew extends LitElement {
 
                 function complete() {
                     console.log("upload complete");
+                    data.attachment = ref;
                     const database = firebase.firestore();
-                    database.collection('tweets').add({
-                        content: content,
-                        date: new Date().getTime(),
-                        author: author,
-                        attachment: ref
-                    });
+                    database.collection('tweets').add(data);
+                    console.log("Tweet with file sent");
                 }
             );
         } else {
-            //if no file, just publish content
             const database = firebase.firestore();
-            database.collection('tweets').add({
-                content: this.content,
-                date: new Date().getTime(),
-                author: this.author
-            });
+            database.collection('tweets').add(data);
+            console.log("Tweet only sent");
         }
     }
 
@@ -126,7 +125,7 @@ class TwitNew extends LitElement {
                 <textarea placeholder="Post a new tweet..." @change="${e => this.content = e.target.value}">${this.content}</textarea>
                 <section class="actions">
                     <button type="submit">Send</button>
-                    <input type="file" class="btn" @input="${e => this.file = e.target.files[0]}">
+                    <input type="file" class="btn" @input="${e => this.file = e.target.files}">
                 </section>
             </form>
 		`;
