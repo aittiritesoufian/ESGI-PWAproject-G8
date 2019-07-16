@@ -105,7 +105,7 @@ class TwitNew extends LitElement {
                 console.log("error on insert on IDB : "+e);
             }
         }
-        this.dispatchEvent(new CustomEvent("sync"));
+        document.dispatchEvent(new CustomEvent('sync'));
         // sync();
     }
 

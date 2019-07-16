@@ -26,13 +26,17 @@ class TwitElement extends LitElement {
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
-                    firebase.firestore().collection("users").doc(this.tweet.author).get().then(doc2 => {
-                        if (doc2.exists) {
-                            this.author = doc2.data();
-                        }
-                    }).catch(function (error) {
-                        console.log("Error getting Author:", error);
-                    });
+                    if (this.tweet.author != undefined && typeof(this.tweet.author) != "object") {
+                        firebase.firestore().collection("users").doc(this.tweet.author).get().then(doc2 => {
+                            if (doc2.exists) {
+                                this.author = doc2.data();
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting Author:", error);
+                        });
+                    } else {
+                        console.log('no author for tweet number : ' + this.id);
+                    }
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");

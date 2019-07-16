@@ -27,7 +27,6 @@ class TwitApp extends LitElement {
         console.log("sync start");
         if (this.connection === true) {
             console.log('sync running');
-            console.log(this.user);
             const localbase = await openDB('twitbook', 1, {
                 upgrade(db) {
                     db.createObjectStore('tweets');
@@ -53,36 +52,33 @@ class TwitApp extends LitElement {
                 }
                 //add on remote
                 else if (tweets[j]['status'] == 1) {
-                    console.log(idTweet);
                     //delete unnecessary field
                     delete tweets[j]['status'];
                     delete tweets[j]['id'];
                     tweets[j]['author'] = this.user.uid;
-                    console.log(tweets[j]);
                     const database = firebase.firestore();
                     //send to remote
                     database.collection('tweets').add(tweets[j]);
-                    console.log("added a new tweet on remote");
                     //remove local temporary version
                     await localbase.delete("tweets", idTweet);
-                    console.log("delete local temporary tweet");
 
                 } else if (tweets[j]['status'] == 2) {
                     firebase.firestore().collection("tweets").doc(idTweet).get().then(async doc => {
                         if (doc.exists) {
                             let tweet = doc.data();
-                            let author = await firebase.firestore().collection("users").doc(doc.data().author).get().then(doc2 => {
-                                if (doc2.exists) {
-                                    return doc2.data();
-                                }
-                            }).catch(function (error) {
-                                console.log("Error getting Author:", error);
-                            });
-                            tweet.author = await author;
-                            tweet.author.id = doc.data().author;
+                            if (tweet.author != undefined && typeof (tweet.author) != "object"){
+                                let author = await firebase.firestore().collection("users").doc(doc.data().author).get().then(doc2 => {
+                                    if (doc2.exists) {
+                                        return doc2.data();
+                                    }
+                                }).catch(function (error) {
+                                    console.log("Error getting Author:", error);
+                                });
+                                tweet.author = await author;
+                                tweet.author.id = doc.data().author;
+                            }
                             tweet.status = 0;
                             tweet.id = idTweet;
-                            console.log(tweet);
                             await localbase.put('tweets', tweet, tweet.id);
                         } else {
                             // doc.data() will be undefined in this case

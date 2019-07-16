@@ -49,7 +49,6 @@ class TwitStore extends LitElement {
                         this.data.map(async tweet => {
                             await database.put('tweets', {"status":2, "id":tweet.id}, tweet.id);
                         });
-                        this.dispatchEvent(new CustomEvent("sync", {}));
                         // sync();
                         this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
                     } else if (type == 'removed') {
@@ -58,6 +57,7 @@ class TwitStore extends LitElement {
                     }
                 })
             });
+            document.dispatchEvent(new CustomEvent('sync'));
         } else {
             console.log("no connexion on store");
         }
