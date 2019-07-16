@@ -3,6 +3,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import checkConnectivity from '../system/connectivity.js';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
+import sync from '../data/twit-sync.js';
 
 class TwitStore extends LitElement {
     constructor(){
@@ -48,6 +49,8 @@ class TwitStore extends LitElement {
                         this.data.map(async tweet => {
                             await database.put('tweets', {"status":2, "id":tweet.id}, tweet.id);
                         })
+                        this.dispatchEvent(new CustomEvent("sync"));
+                        // sync();
                         this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
                     } else if (type == 'removed') {
                         this.data.splice(oldIndex, 1);

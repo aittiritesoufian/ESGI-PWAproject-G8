@@ -5,19 +5,100 @@ import "./views/twit-home.js";
 import "./views/twit-profile.js";
 import "./views/twit-post.js";
 import checkConnectivity from './system/connectivity.js';
-import sync from './data/twit-sync.js';
+import { openDB } from '/node_modules/idb/build/esm/index.js';
+// import sync from './data/twit-sync.js';
 
 class TwitApp extends LitElement {
 
     constructor() {
         super();
         this.connection = false;
+        this.user = {};
     }
 
     static get properties() {
         return {
-            connection: Boolean
+            connection: Boolean,
+            user: Object
         };
+    }
+
+    async twitSync() {
+        console.log("sync start");
+
+        var connectionStatus = true;
+        document.addEventListener('connection-changed', ({ detail }) => {
+            connectionStatus = detail;
+            console.log("Sync status : " + connectionStatus);
+        });
+
+        if (connectionStatus === true) {
+            const localbase = await openDB('twitbook', 1, {
+                upgrade(db) {
+                    db.createObjectStore('tweets');
+                }
+            });
+
+            const keys = await localbase.getAllKeys('tweets');
+            // console.log(keys);
+            let tweets = [];
+            for (var i = keys.length - 1; i >= 0; i--) {
+                tweets.push(await localbase.get('tweets', keys[i]));
+            }
+            // console.log(tweets);
+
+            for (var j = tweets.length - 1; j >= 0; j--) {
+                // console.log('loop starting');
+                // console.log(tweets[j]);
+                let idTweet = tweets[j]['id'];
+                //delete
+                if (tweets[j]['status'] == -2) {
+                    //delete on remote
+
+                }
+                //add on remote
+                else if (tweets[j]['status'] == 1) {
+                    console.log(idTweet);
+                    //delete unnecessary field
+                    delete tweets[j]['status'];
+                    delete tweets[j]['id'];
+                    tweets[j]['author'] = this.user.uid;
+                    console.log(tweets[j]);
+                    const database = firebase.firestore();
+                    //send to remote
+                    database.collection('tweets').add(tweets[j]);
+                    console.log("added a new tweet on remote");
+                    //remove local temporary version
+                    await localbase.delete("tweets", idTweet);
+                    console.log("delete local temporary tweet");
+
+                } else if (tweets[j]['status'] == 2) {
+                    firebase.firestore().collection("tweets").doc(idTweet).get().then(async doc => {
+                        if (doc.exists) {
+                            let tweet = doc.data();
+                            let author = await firebase.firestore().collection("users").doc(doc.data().author).get().then(doc2 => {
+                                if (doc2.exists) {
+                                    return doc2.data();
+                                }
+                            }).catch(function (error) {
+                                console.log("Error getting Author:", error);
+                            });
+                            tweet.author = await author;
+                            tweet.author.id = doc.data().author;
+                            tweet.status = 0;
+                            tweet.id = idTweet;
+                            console.log(tweet);
+                            await localbase.put('tweets', tweet, tweet.id);
+                        } else {
+                            // doc.data() will be undefined in this case
+                            console.log("No such document!");
+                        }
+                    }).catch(function (error) {
+                        console.log("Error getting Tweet:", error);
+                    });
+                }
+            }
+        }
     }
     
     initRouter() {
@@ -51,7 +132,13 @@ class TwitApp extends LitElement {
         document.addEventListener('connection-changed', ({ detail }) => {
             this.connection = detail;
         });
-        sync();
+        document.addEventListener('user-logged', (event) => {
+            // console.log(event.detail);
+            this.user = event.user;
+        });
+        document.addEventListener('sync', () => {
+            this.twitSync();
+        });
         checkConnectivity();
         if (this.connection) {
             console.log('online');

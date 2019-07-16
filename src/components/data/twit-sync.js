@@ -67,40 +67,21 @@ export default async function twitSync() {
                 // });
 
             }
-            //update
+            //add on remote
             else if (tweets[j]['status'] == 1) {
-                //update on remote
+                console.log(idTweet);
+                //delete unnecessary field
+                delete tweets[j]['status'];
+                delete tweets[j]['id'];
+                console.log(tweets[j]);
+                const database = firebase.firestore();
+                //send to remote
+                database.collection('tweets').add(tweets[j]);
+                console.log("added a new tweet on remote");
+                //remove local temporary version
+                await localbase.delete("tweets",idTweet);
+                console.log("delete local temporary tweet");
 
-                // TODO: HERE IMPLEMENT UPDATE/CREATE WITH FIREBASE
-
-                //
-                // const myHeaders = new Headers({
-                //     "Content-Type": "application/json",
-                // });
-
-                // const params = {
-                //     method: 'PATCH',
-                //     headers: myHeaders,
-                //     mode: 'cors',
-                //     cache: 'default',
-                //     body: JSON.stringify({ "id": tweets[j]["id"], "description": tweets[j]["description"], "solved": tweets[j]["solved"] })
-                // };
-
-                // //call to API to update
-                // const result = fetch('http://localhost:3000/tweets/' + tweets[j]["id"], params).then(async (response) => {
-                //     if (response.ok) {
-                //         //update status en localbase if updated on JSON server
-                //         const todo = await localbase.get('tweets', idTodo);
-                //         await localbase.put('tweets', { "id": todo["id"], "description": todo["description"], "solved": todo["solved"], "status": 0 }, idTodo);
-                //         console.log("updated");
-                //     } else {
-                //         console.log("Server refused the update");
-                //         console.log(response);
-                //         resolve(false);
-                //     }
-                // }).catch(function (error) {
-                //     console.log('General error on update : ' + error);
-                // });
             } else if (tweets[j]['status'] == 2){
                 firebase.firestore().collection("tweets").doc(idTweet).get().then(async doc => {
                     if (doc.exists) {
@@ -116,13 +97,8 @@ export default async function twitSync() {
                         tweet.author.id = doc.data().author;
                         tweet.status = 0;
                         tweet.id = idTweet;
-                        const database = await openDB('twitbook', 1, {
-                            upgrade(db) {
-                                db.createObjectStore('tweets');
-                            }
-                        });
                         console.log(tweet);
-                        await database.add('tweets', tweet, tweet.id);
+                        await localbase.put('tweets', tweet, tweet.id);
                     } else {
                         // doc.data() will be undefined in this case
                         console.log("No such document!");
