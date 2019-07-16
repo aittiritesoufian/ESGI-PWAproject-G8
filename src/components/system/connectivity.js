@@ -1,5 +1,3 @@
-import sync from '../data/twit-sync.js';
-
 let tStart = null;
 let tEnd = null;
 let image = new Image();
@@ -75,9 +73,6 @@ function changeConnectivity(state) {
   const event = new CustomEvent('connection-changed', {
     detail: state
   });
-
-  sync();
-
   document.dispatchEvent(event);
 }
 

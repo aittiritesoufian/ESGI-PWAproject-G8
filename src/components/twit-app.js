@@ -5,12 +5,19 @@ import "./views/twit-home.js";
 import "./views/twit-profile.js";
 import "./views/twit-post.js";
 import checkConnectivity from './system/connectivity.js';
+import sync from './data/twit-sync.js';
 
 class TwitApp extends LitElement {
 
     constructor() {
         super();
         this.connection = false;
+    }
+
+    static get properties() {
+        return {
+            connection: Boolean
+        };
     }
     
     initRouter() {
@@ -41,11 +48,13 @@ class TwitApp extends LitElement {
     }
 
     firstUpdated() {
-        checkConnectivity();
         document.addEventListener('connection-changed', ({ detail }) => {
             this.connection = detail;
         });
-        if (this.connection){
+        sync();
+        checkConnectivity();
+        if (this.connection) {
+            console.log('online');
             firebase.initializeApp(document.config);
             firebase.auth().onAuthStateChanged(user => {
                 if (!user) {
@@ -58,6 +67,7 @@ class TwitApp extends LitElement {
             });
         } else {
             // TODO : Offline homepage !
+            console.log('Offline');
         }
     }
 

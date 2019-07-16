@@ -1,14 +1,14 @@
 import { openDB } from '/node_modules/idb/build/esm/index.js';
-import checkConnectivity from '../system/connectivity.js';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 
 export default async function twitSync() {
     console.log("sync start");
 
     var connectionStatus = true;
-    checkConnectivity();
     document.addEventListener('connection-changed', ({ detail }) => {
         connectionStatus = detail;
-        console.log("last connection for sync status : " + connectionStatus);
+        console.log("Sync status : " + connectionStatus);
     });
 
     if (connectionStatus === true) {
@@ -29,9 +29,9 @@ export default async function twitSync() {
         for (var j = tweets.length - 1; j >= 0; j--) {
             // console.log('loop starting');
             // console.log(tweets[j]);
-            var idTodo = tweets[j]['id'];
+            let idTweet = tweets[j]['id'];
             //delete
-            if (tweets[j]['status'] == -1) {
+            if (tweets[j]['status'] == -2) {
                 //delete on remote
 
                 // TODO: HERE IMPLEMENT DELETE WITH FIREBASE
@@ -101,6 +101,35 @@ export default async function twitSync() {
                 // }).catch(function (error) {
                 //     console.log('General error on update : ' + error);
                 // });
+            } else if (tweets[j]['status'] == 2){
+                firebase.firestore().collection("tweets").doc(idTweet).get().then(async doc => {
+                    if (doc.exists) {
+                        let tweet = doc.data();
+                        let author = await firebase.firestore().collection("users").doc(doc.data().author).get().then(doc2 => {
+                            if (doc2.exists) {
+                                return doc2.data();
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting Author:", error);
+                        });
+                        tweet.author = await author;
+                        tweet.author.id = doc.data().author;
+                        tweet.status = 0;
+                        tweet.id = idTweet;
+                        const database = await openDB('twitbook', 1, {
+                            upgrade(db) {
+                                db.createObjectStore('tweets');
+                            }
+                        });
+                        console.log(tweet);
+                        await database.add('tweets', tweet, tweet.id);
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
+                    }
+                }).catch(function (error) {
+                    console.log("Error getting Tweet:", error);
+                });
             }
         }
     }
