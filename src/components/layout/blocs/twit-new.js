@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/storage';
+import 'fa-icons';
 
 class TwitNew extends LitElement {
 
@@ -97,35 +98,65 @@ class TwitNew extends LitElement {
                 display: block;
             }
             * {  box-sizing: border-box }
+
+            form {
+                padding-top: 10px;  
+            }
+            section {
+                padding-top: 10px;  
+            }
             textarea {
+                padding: 10px;
                 position: relative;
                 display: block;
                 width: 90%;
                 margin-left: 5%;
                 height: 250px;
+                border: 2px solid rgb(29, 161, 242);
+                border-radius: 15px;
+                opacity: 0.2;
+                background-color: rgb(169, 169, 169);
+                font-size: 20px;
             }
+            
             button, btn {
                 margin-top:5px;
                 margin-left: 5%;
-                background-color: light-blue;
-                border: 1px solid light-blue;
-                border-radius: 5px;
+                background-color: rgb(29, 161, 242);
+                border: 1px solid rgb(29, 161, 242);
+                width: 90px ;
+                border-radius: 20px;
                 padding: 2px 4px;
+                padding-top: 5px;
             }
+           
             button:hover {
-                background-color: blue;
-                border: 1px solid blue;
+                background-color: rgb(29, 161, 242);
+                border: 1px solid rgb(29, 161, 242);
+                opacity: 0.50;
             }
+
+            textarea:hover {
+                background-color: white;
+                opacity: 0.50;
+            }
+
+            ::placeholder { 
+                color: black;
+                font-size: 20px;
+                
+            }
+
         `;
     }
 
 	render(){
         return html`
             <form @submit="${this.handleTweet}">
-                <textarea placeholder="Post a new tweet..." @change="${e => this.content = e.target.value}">${this.content}</textarea>
+                <textarea placeholder="Quoi de neuf ?" @change="${e => this.content = e.target.value}">${this.content}</textarea>
                 <section class="actions">
-                    <button type="submit">Send</button>
-                    <input type="file" class="btn" @input="${e => this.file = e.target.files}">
+                    <button type="submit">Tweeter</button>
+                    <input type="file" class="btn"  @input="${e => this.file = e.target.files}">  
                 </section>
             </form>
 		`;
