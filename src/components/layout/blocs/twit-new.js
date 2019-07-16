@@ -3,7 +3,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/storage';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
-import sync from '../../data/twit-sync.js';
+// import sync from '../../data/twit-sync.js';
 
 class TwitNew extends LitElement {
 
@@ -105,7 +105,7 @@ class TwitNew extends LitElement {
                 console.log("error on insert on IDB : "+e);
             }
         }
-        document.dispatchEvent(new CustomEvent("sync"));
+        this.dispatchEvent(new CustomEvent("sync"));
         // sync();
     }
 

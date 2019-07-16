@@ -25,14 +25,9 @@ class TwitApp extends LitElement {
 
     async twitSync() {
         console.log("sync start");
-
-        var connectionStatus = true;
-        document.addEventListener('connection-changed', ({ detail }) => {
-            connectionStatus = detail;
-            console.log("Sync status : " + connectionStatus);
-        });
-
-        if (connectionStatus === true) {
+        if (this.connection === true) {
+            console.log('sync running');
+            console.log(this.user);
             const localbase = await openDB('twitbook', 1, {
                 upgrade(db) {
                     db.createObjectStore('tweets');
@@ -133,10 +128,10 @@ class TwitApp extends LitElement {
             this.connection = detail;
         });
         document.addEventListener('user-logged', (event) => {
-            // console.log(event.detail);
-            this.user = event.user;
+            this.user = event.detail.user;
         });
         document.addEventListener('sync', () => {
+            console.log('event listener sync called');
             this.twitSync();
         });
         checkConnectivity();
