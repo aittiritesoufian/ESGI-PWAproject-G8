@@ -112,7 +112,7 @@ class TwitNew extends LitElement {
                 width: 90%;
                 margin-left: 5%;
                 height: 250px;
-                border: 2px solid rgb(29, 161, 242);
+                border: 3px solid rgb(29, 161, 242);
                 border-radius: 15px;
                 opacity: 0.2;
                 background-color: rgb(169, 169, 169);
@@ -147,12 +147,22 @@ class TwitNew extends LitElement {
                 
             }
 
+            img { 
+                border: 3px solid black;
+                border-radius: 15px;
+                width: 30px;
+                height: 30px;
+                
+            }
+
         `;
     }
 
 	render(){
         return html`
             <form @submit="${this.handleTweet}">
+            <img src="${this.author.avatar}" />
+
                 <textarea placeholder="Quoi de neuf ?" @change="${e => this.content = e.target.value}">${this.content}</textarea>
                 <section class="actions">
                     <button type="submit">Tweeter</button>
