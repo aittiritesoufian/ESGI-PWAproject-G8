@@ -61,7 +61,6 @@ class TwitElement extends LitElement {
 
 	render(){
 		return html`
-<<<<<<< HEAD
                 <div style="padding: 30px; border-top: 1px solid #f1f1f1; border-bottom: 1px solid #f1f1f1">
                     <header>
                         <a href="/profil/${this.author.slug}" style="text-decoration: none">
@@ -95,37 +94,6 @@ class TwitElement extends LitElement {
                         </twit-button>
                     </footer>
                 </div>
-=======
-                <header>
-                    ${
-                        this.author ? html`
-                            <a href="/profil/${this.author.slug}">
-                                <img src="${this.author.avatar}" />
-                                <h1>${this.author.name}</h1>
-                            </a>
-                        ` : html``
-                    }
-                </header>
-                <main>
-                    ${
-                        this.tweet.content !== "" ? html`
-                            <p>${this.tweet.content}</p>
-                        `: html`
-                            <twit-element id="${this.tweet.tweetReference}"></twit-element>
-                        `
-                    }
-                    ${
-                        this.tweet.attachment ? html`
-                            <twit-pic ref="${this.tweet.attachment}"></twit-pic>
-                        ` : ""
-                    }
-                </main>
-                <footer>
-                    <twit-button @click="${this.handleLike}" class="like"></twit-button>
-                    <twit-button @click="${this.handleRetweet}" class="retweet"></twit-button>
-                    <twit-button @click="${this.handleComment}" class="comment"></twit-button>
-                </footer>
->>>>>>> get tweets from local storage
 		`;
 	}
 }
