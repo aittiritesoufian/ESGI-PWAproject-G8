@@ -83,12 +83,14 @@ class TwitNew extends LitElement {
                     const database = firebase.firestore();
                     database.collection('tweets').add(data);
                     console.log("Tweet with file sent");
+                    window.location.replace('/');
                 }
             );
         } else {
             const database = firebase.firestore();
             database.collection('tweets').add(data);
             console.log("Tweet only sent");
+            window.location.replace('/');
         }
     }
 
@@ -125,9 +127,10 @@ class TwitNew extends LitElement {
                 background-color: rgb(29, 161, 242);
                 border: 1px solid rgb(29, 161, 242);
                 width: 90px ;
+                text-align: center;
                 border-radius: 20px;
-                padding: 2px 4px;
-                padding-top: 5px;
+                padding: 2px 2px;
+                padding-top: 2px;
             }
            
             button:hover {
@@ -162,11 +165,12 @@ class TwitNew extends LitElement {
         return html`
             <form @submit="${this.handleTweet}">
             <img src="${this.author.avatar}" />
+            <h1>${this.author.name}</h1>
 
                 <textarea placeholder="Quoi de neuf ?" @change="${e => this.content = e.target.value}">${this.content}</textarea>
                 <section class="actions">
                     <button type="submit">Tweeter</button>
-                    <input type="file" class="btn"  @input="${e => this.file = e.target.files}">  
+                    <input type="file" class="btn"  @input="${e => this.file = e.target.files}"> 
                 </section>
             </form>
 		`;
