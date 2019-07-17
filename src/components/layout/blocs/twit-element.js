@@ -9,20 +9,22 @@ class TwitElement extends LitElement {
 	constructor(){
         super();
         this.id = "";
-        this.author = {};
         this.tweet = {};
+        this.author = {};
     }
     
     static get properties(){
         return {
             id: String,
-            author: Object,
-            tweet: Object
+            tweet: Object,
+            author: Object
         };
     }
 
     firstUpdated(){
+        console.log("on Element");
         if(this.id){
+            console.log("on Element by ID");
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
@@ -44,6 +46,9 @@ class TwitElement extends LitElement {
             }).catch(function(error) {
                 console.log("Error getting Tweet:", error);
             });
+        } else {
+            console.log("not on Element by ID");
+            console.log(this.tweet);
         }
     }
 
@@ -61,6 +66,7 @@ class TwitElement extends LitElement {
 
 	render(){
 		return html`
+<<<<<<< HEAD
                 <div style="padding: 30px; border-top: 1px solid #f1f1f1; border-bottom: 1px solid #f1f1f1">
                     <header>
                         <a href="/profil/${this.author.slug}" style="text-decoration: none">
@@ -94,6 +100,29 @@ class TwitElement extends LitElement {
                         </twit-button>
                     </footer>
                 </div>
+=======
+                <header>
+                </header>
+                <main>
+                    ${
+                        this.tweet.content !== "" ? html`
+                            <p>${this.tweet.content}</p>
+                        `: html`
+                            <twit-element id="${this.tweet.tweetReference}"></twit-element>
+                        `
+                    }
+                    ${
+                        this.tweet.attachment ? html`
+                            <twit-pic ref="${this.tweet.attachment}"></twit-pic>
+                        ` : ""
+                    }
+                </main>
+                <footer>
+                    <twit-button @click="${this.handleLike}" class="like"></twit-button>
+                    <twit-button @click="${this.handleRetweet}" class="retweet"></twit-button>
+                    <twit-button @click="${this.handleComment}" class="comment"></twit-button>
+                </footer>
+>>>>>>> get tweets from local storage
 		`;
 	}
 }

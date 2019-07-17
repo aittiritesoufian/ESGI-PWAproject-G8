@@ -177,7 +177,7 @@ class TwitHome extends LitElement {
                 <h1>Tweets: </h1>
                 <ul>
                     ${this.tweets.map(tweet => html`
-                    <twit-element id="${tweet.id}"></twit-element>
+                    <twit-element .tweet="${tweet}"></twit-element>
                     `)}
                 </ul>
                 `
