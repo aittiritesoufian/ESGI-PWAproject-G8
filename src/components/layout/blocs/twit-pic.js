@@ -26,6 +26,10 @@ class TwitPic extends LitElement {
             * {  box-sizing: border-box }
             img {
                 width:100%;
+                border: 1px solid gray;
+                border-radius: 10px;
+                padding: 16px;
+                border: 1px solid #ededed;
             }
         `;
     }

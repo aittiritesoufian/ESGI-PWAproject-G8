@@ -25,7 +25,9 @@ class TwitButton extends LitElement {
 
 	render(){
 		return html`
-			<button class="${this.class}"><img src="${this.icon}"/></button>
+			<button style="background: none; border:none; " class="${this.class}">
+			  <slot></slot>
+      </button>
 		`;
 	}
 }
