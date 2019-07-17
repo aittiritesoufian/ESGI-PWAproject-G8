@@ -12,6 +12,7 @@ class TwitStore extends LitElement {
         this.data = [];
         this.collection = '';
         this.connection = false;
+        this.previousConnection = false;
         this.author = {};
     }
 
@@ -24,16 +25,20 @@ class TwitStore extends LitElement {
                 type: Array
             },
             collection: String,
-            connection: Boolean
+            connection: Boolean,
+            previousConnection: Boolean
         };
     }
 
     async firstUpdated() {
         document.addEventListener('connection-changed', ({ detail }) => {
+            this.previousConnection = this.connection;
             this.connection = detail;
             console.log("last connection for store : " + this.connection);
+            if(this.connection == true && this.previousConnection == false){
+                this.firstUpdated();
+            }
         });
-        checkConnectivity();
         const database = await openDB('twitbook', 1, {
             upgrade(db) {
                 db.createObjectStore('tweets');

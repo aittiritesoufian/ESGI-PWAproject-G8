@@ -97,18 +97,15 @@ class TwitApp extends LitElement {
         router.setRoutes([
             {
                 path: '/',
-                component: 'twit-home',
-                action: () => import("./views/twit-home.js")
+                component: 'twit-home'
             },
             {
                 path: '/profil',
-                component: 'twit-profile',
-                action: () => import("./views/twit-profile.js")
+                component: 'twit-profile'
             },
             {
                 path: '/post',
-                component: 'twit-post',
-                action: () => import("./views/twit-post.js")
+                component: 'twit-post'
             }
             // {
             //     path: '(.*)',
