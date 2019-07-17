@@ -6,6 +6,7 @@
 	<title>TwitBoot</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="manifest" href="manifest.json">
 	<!-- <link rel="stylesheet" href=""> -->
 	<style>
 		*,*::before, *::after {
@@ -35,16 +36,26 @@
 	     width: 42px;
 	     display: block;
 	   }
-	</style>
+	</style><script>
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function () {
+				navigator.serviceWorker.register('/service-worker.js', {
+					scope: '/'
+				});
+			});
+		} else {
+			console.log('Use another cache method :(');
+		}
+	</script>
 	<script type="text/javascript">
-		(() => {
-			if('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('./service-worker.js', { scope: "/" })
-					.then(reg => {
-						console.log('Registration successful')
-					}).catch(console.log);
-			}
-		})();
+		// (() => {
+		// 	if('serviceWorker' in navigator) {
+		// 		navigator.serviceWorker.register('./service-worker.js', { scope: "/" })
+		// 			.then(reg => {
+		// 				console.log('Registration successful')
+		// 			}).catch(console.log);
+		// 	}
+		// })();
 	</script>
 </head>
 <body>

@@ -98,7 +98,7 @@ class TwitHome extends LitElement {
         this.tweets = e.detail;
         console.log("addTweet");
         setTimeout(() => {
-            window.scrollTo(0, document.body.scrollHeight);
+            // window.scrollTo(0, document.body.scrollHeight);
         }, 0);
     }
 
@@ -170,14 +170,14 @@ class TwitHome extends LitElement {
                 <twit-login @user-logged="${this.handleLogin}">
                 </twit-login>
                 ` : html`
-                <twit-store collection="tweets" @child-changed="${this.addTweet}">
+                <twit-store collection="tweets" @newtweets="${this.addTweet}">
                 </twit-store>
                 <h1>Hi, ${this.user.email}</h1>
                 <button @click="${this.subscribe}">Subscribe</button>
                 <h1>Tweets: </h1>
                 <ul>
                     ${this.tweets.map(tweet => html`
-                    <twit-element id="${tweet.id}"></twit-element>
+                    <twit-element .tweet="${tweet}"></twit-element>
                     `)}
                 </ul>
                 `

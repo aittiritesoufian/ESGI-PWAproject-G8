@@ -3,36 +3,35 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import "./twit-button.js";
 import "./twit-pic.js";
+import { openDB } from '/node_modules/idb/build/esm/index.js';
 
 class TwitElement extends LitElement {
 
 	constructor(){
         super();
         this.id = "";
-        this.author = {};
         this.tweet = {};
+        this.author = {};
     }
     
     static get properties(){
         return {
             id: String,
-            author: Object,
-            tweet: Object
+            tweet: Object,
+            author: Object
         };
     }
 
-    firstUpdated(){
+    async firstUpdated(){
+        const database = await openDB('twitbook', 1, {
+            upgrade(db) {
+                db.createObjectStore('tweets');
+            }
+        });
         if(this.id){
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
-                    firebase.firestore().collection("users").doc(this.tweet.author).get().then(doc2 => {
-                        if (doc2.exists) {
-                            this.author = doc2.data();
-                        }
-                    }).catch(function (error) {
-                        console.log("Error getting Author:", error);
-                    });
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
@@ -40,6 +39,11 @@ class TwitElement extends LitElement {
             }).catch(function(error) {
                 console.log("Error getting Tweet:", error);
             });
+        } else {
+            if (this.tweet.author != undefined && typeof (this.tweet.author) != "object" && this.tweet.author != ""){
+                this.author = await database.get('users', this.tweet.author);
+            }
+            console.log("not on Element by ID");
         }
     }
 
