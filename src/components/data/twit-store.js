@@ -59,6 +59,7 @@ class TwitStore extends LitElement {
             });
             document.dispatchEvent(new CustomEvent('sync'));
         } else {
+            
             console.log("no connexion on store");
         }
         
