@@ -3,6 +3,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import "./twit-button.js";
 import "./twit-pic.js";
+import { openDB } from '/node_modules/idb/build/esm/index.js';
 
 class TwitElement extends LitElement {
 
@@ -21,22 +22,16 @@ class TwitElement extends LitElement {
         };
     }
 
-    firstUpdated(){
+    async firstUpdated(){
+        const database = await openDB('twitbook', 1, {
+            upgrade(db) {
+                db.createObjectStore('tweets');
+            }
+        });
         if(this.id){
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
-                    if (this.tweet.author != undefined && typeof(this.tweet.author) != "object") {
-                        firebase.firestore().collection("users").doc(this.tweet.author).get().then(doc2 => {
-                            if (doc2.exists) {
-                                this.author = doc2.data();
-                            }
-                        }).catch(function (error) {
-                            console.log("Error getting Author:", error);
-                        });
-                    } else {
-                        console.log('no author for tweet number : ' + this.id);
-                    }
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
@@ -45,6 +40,9 @@ class TwitElement extends LitElement {
                 console.log("Error getting Tweet:", error);
             });
         } else {
+            if (this.tweet.author != undefined && typeof (this.tweet.author) != "object" && this.tweet.author != ""){
+                this.author = await database.get('users', this.tweet.author);
+            }
             console.log("not on Element by ID");
         }
     }
@@ -100,10 +98,10 @@ class TwitElement extends LitElement {
 =======
                 <header>
                     ${
-                        this.tweet.author ? html`
-                            <a href="/profil/${this.tweet.author.slug}">
-                                <img src="${this.tweet.author.avatar}" />
-                                <h1>${this.tweet.author.name}</h1>
+                        this.author ? html`
+                            <a href="/profil/${this.author.slug}">
+                                <img src="${this.author.avatar}" />
+                                <h1>${this.author.name}</h1>
                             </a>
                         ` : html``
                     }

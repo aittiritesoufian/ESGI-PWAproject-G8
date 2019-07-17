@@ -37,6 +37,7 @@ class TwitStore extends LitElement {
         const database = await openDB('twitbook', 1, {
             upgrade(db) {
                 db.createObjectStore('tweets');
+                db.createObjectStore('users');
             }
         });
         
@@ -48,26 +49,26 @@ class TwitStore extends LitElement {
                     if (type == "added" || type == "updated") {
                         this.tweet = doc.data();
                         this.tweet.id = doc.id ? doc.id : "";
+                        this.tweet.status = 0;
                         if (this.tweet.author != undefined && typeof (this.tweet.author) != "object" && this.tweet.author != "") {
-                            let author = {};
-                            await firebase.firestore().collection("users").doc(this.tweet.author).get().then(async doc2 => {
+                            firebase.firestore().collection("users").doc(this.tweet.author).get().then(async doc2 => {
                                 if (doc2.exists) {
-                                    author = doc2.data();
-                                    this.tweet.author = author;
-                                    this.tweet.author.id = doc.data().author;
+                                    this.author = doc2.data();
+                                    await database.put("users", this.author, doc2.id);
                                 }
                             }).catch(function (error) {
                                 console.log("Error getting Author:", error);
                             });
-                            this.tweet.status = 0;
-                            this.data = [...this.data, this.tweet];
                         } else {
-                            this.tweet.status = 0;
-                            this.data = [...this.data, this.tweet];
+                            console.log('no author for tweet number : ' + this.id);
                         }
+                        this.data = [...this.data, this.tweet];
+                        // console.log(this.tweet);
                         this.data.map(async tweet => {
+                            // console.log('tweet save '+tweet.id);
                             await database.put('tweets', tweet, tweet.id);
                         });
+                        // sync();
                         // document.dispatchEvent(new CustomEvent('sync'));
                         this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
                     } else if (type == 'removed') {
@@ -78,8 +79,13 @@ class TwitStore extends LitElement {
             });
             document.dispatchEvent(new CustomEvent('sync'));
         } else {
-            
             console.log("no connexion on store");
+            const keys = await database.getAllKeys('tweets');
+            // console.log(keys);
+            for (var i = keys.length - 1; i >= 0; i--) {
+                this.data = [...this.data, await database.get('tweets', keys[i])];
+            }
+            this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
         }
         
     }
