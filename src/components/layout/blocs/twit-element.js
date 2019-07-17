@@ -22,9 +22,7 @@ class TwitElement extends LitElement {
     }
 
     firstUpdated(){
-        console.log("on Element");
         if(this.id){
-            console.log("on Element by ID");
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
@@ -48,7 +46,6 @@ class TwitElement extends LitElement {
             });
         } else {
             console.log("not on Element by ID");
-            console.log(this.tweet);
         }
     }
 
@@ -102,6 +99,14 @@ class TwitElement extends LitElement {
                 </div>
 =======
                 <header>
+                    ${
+                        this.tweet.author ? html`
+                            <a href="/profil/${this.tweet.author.slug}">
+                                <img src="${this.tweet.author.avatar}" />
+                                <h1>${this.tweet.author.name}</h1>
+                            </a>
+                        ` : html``
+                    }
                 </header>
                 <main>
                     ${

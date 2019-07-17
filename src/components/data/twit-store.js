@@ -28,46 +28,47 @@ class TwitStore extends LitElement {
         };
     }
 
-    firstUpdated() {
+    async firstUpdated() {
         document.addEventListener('connection-changed', ({ detail }) => {
             this.connection = detail;
             console.log("last connection for store : " + this.connection);
         });
         checkConnectivity();
+        const database = await openDB('twitbook', 1, {
+            upgrade(db) {
+                db.createObjectStore('tweets');
+            }
+        });
         
         if (this.connection) {
             console.log("connection to store");
             this.firestore = firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot(ref => {
                 ref.docChanges().forEach(async change => {
                     const { newIndex, oldIndex, doc, type } = change;
-
-                    if (type == "added") {
+                    if (type == "added" || type == "updated") {
                         this.tweet = doc.data();
                         this.tweet.id = doc.id ? doc.id : "";
-                        if (this.tweet.author != undefined && typeof (this.tweet.author) != "object") {
-                            firebase.firestore().collection("users").doc(this.tweet.author).get().then(doc2 => {
+                        if (this.tweet.author != undefined && typeof (this.tweet.author) != "object" && this.tweet.author != "") {
+                            let author = {};
+                            await firebase.firestore().collection("users").doc(this.tweet.author).get().then(async doc2 => {
                                 if (doc2.exists) {
-                                    this.author = doc2.data();
-                                    this.author.id = doc2.id ? doc2.id : "";
+                                    author = doc2.data();
+                                    this.tweet.author = author;
+                                    this.tweet.author.id = doc.data().author;
                                 }
                             }).catch(function (error) {
                                 console.log("Error getting Author:", error);
                             });
-                            this.tweet.author = this.author;
+                            this.tweet.status = 0;
+                            this.data = [...this.data, this.tweet];
                         } else {
-                            console.log('no author for tweet number : ' + this.tweet.id);
+                            this.tweet.status = 0;
+                            this.data = [...this.data, this.tweet];
                         }
-                        this.data = [...this.data, this.tweet];
-                        const database = await openDB('twitbook', 1, {
-                            upgrade(db) {
-                                db.createObjectStore('tweets');
-                            }
-                        });
-                        this.tweet.status = 0;
                         this.data.map(async tweet => {
                             await database.put('tweets', tweet, tweet.id);
                         });
-                        // sync();
+                        // document.dispatchEvent(new CustomEvent('sync'));
                         this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
                     } else if (type == 'removed') {
                         this.data.splice(oldIndex, 1);
