@@ -131,6 +131,11 @@ class TwitApp extends LitElement {
         if (this.connection) {
             console.log('online');
             firebase.initializeApp(document.config);
+            firebase.firestore().settings({
+                cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+            });
+
+            firebase.firestore().enablePersistence();
             firebase.auth().onAuthStateChanged(user => {
                 if (!user) {
                     localStorage.setItem('logged', false);

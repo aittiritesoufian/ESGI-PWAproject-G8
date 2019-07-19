@@ -46,9 +46,10 @@ class TwitStore extends LitElement {
             }
         });
         
-        if (this.connection) {
-            console.log("connection to store");
-            this.firestore = firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot(ref => {
+        // if (this.connection) {
+            // console.log("connection to store");
+            this.data = [];
+        this.firestore = firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot({ includeMetadataChanges: true },ref => {
                 ref.docChanges().forEach(async change => {
                     const { newIndex, oldIndex, doc, type } = change;
                     if (type == "added" || type == "updated") {
@@ -77,21 +78,24 @@ class TwitStore extends LitElement {
                         // document.dispatchEvent(new CustomEvent('sync'));
                         this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
                     } else if (type == 'removed') {
-                        this.data.splice(oldIndex, 1);
-                        this.dispatchEvent(new CustomEvent('child-changed', { detail: this.data }));
+                        console.log(doc.id);
+                        console.log("deleted from IDB ");
+                        // this.data.splice(oldIndex, 1);
+                        await database.delete('tweets', doc.id);
+                        // this.dispatchEvent(new CustomEvent('child-changed', { detail: this.data }));
                     }
                 })
             });
             document.dispatchEvent(new CustomEvent('sync'));
-        } else {
-            console.log("no connexion on store");
-            const keys = await database.getAllKeys('tweets');
-            // console.log(keys);
-            for (var i = keys.length - 1; i >= 0; i--) {
-                this.data = [...this.data, await database.get('tweets', keys[i])];
-            }
-            this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
-        }
+        // } else {
+        //     console.log("no connexion on store");
+        //     const keys = await database.getAllKeys('tweets');
+        //     // console.log(keys);
+        //     for (var i = keys.length - 1; i >= 0; i--) {
+        //         this.data = [...this.data, await database.get('tweets', keys[i])];
+        //     }
+        //     this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
+        // }
         
     }
 }
