@@ -56,7 +56,7 @@ class TwitStore extends LitElement {
             this.firestore = firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot({ includeMetadataChanges: true },ref => {
                 ref.docChanges().forEach(async change => {
                     const { newIndex, oldIndex, doc, type } = change;
-                    if (type == "added" || type == "updated") {
+                    if (type == "added" || type == "modified") {
                         this.tweet = doc.data();
                         this.tweet.id = doc.id ? doc.id : "";
                         this.tweet.status = 0;

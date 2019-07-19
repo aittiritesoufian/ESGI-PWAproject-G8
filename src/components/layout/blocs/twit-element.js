@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/auth';
 import "./twit-button.js";
 import "./twit-pic.js";
 import { openDB } from '/node_modules/idb/build/esm/index.js';
@@ -33,12 +34,7 @@ class TwitElement extends LitElement {
     }
 
     async firstUpdated(){
-        const database = await openDB('twitbook', 1, {
-            upgrade(db) {
-                db.createObjectStore('tweets');
-            }
-        });
-        this.user = firebase.auth().currentUser();
+        this.user = firebase.auth().currentUser;
         if(this.id){
             
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
@@ -74,14 +70,41 @@ class TwitElement extends LitElement {
 
     handleLike(e) {
         // TODO: add a like to the current tweet
-        firebase.firestore().collection('tweets').doc(this.tweet.id).update({
-            likes: firebase.firestore.FieldValue.arrayUnion(this.user.uid)
-        }, { merge: true });
-        console.log("like added on tweet "+this.tweet.id+" for user "+this.user.id);
+        if (this.tweet.likes && this.tweet.likes.indexOf(this.user.uid) < 0){
+            firebase.firestore().collection('tweets').doc(this.tweet.id).update({
+                likes: firebase.firestore.FieldValue.arrayUnion(this.user.uid)
+            });
+            console.log("like added on tweet " + this.tweet.id + " for user " + this.user.uid);
+            document.dispatchEvent(new CustomEvent('sync'));
+        } else if (this.tweet.likes) {
+            firebase.firestore().collection('tweets').doc(this.tweet.id).update({
+                likes: firebase.firestore.FieldValue.arrayRemove(this.user.uid)
+            });
+            console.log("like removed on tweet " + this.tweet.id + " for user " + this.user.uid);
+            document.dispatchEvent(new CustomEvent('sync'));
+        }
     }
 
-    handleRetweet(e) {
+    async handleRetweet(e) {
+        const database = await openDB('twitbook', 1, {
+            upgrade(db) {
+                db.createObjectStore('tweets');
+            }
+        });
         // TODO: publish a new tweet with tweetReference in place of content
+        let data = {
+            tweetReference: this.tweet.id,
+            date: new Date().getTime()
+        }
+        data.status = 1;
+        data.id = "local" + Math.floor(Math.random() * 1000);
+        try{
+            await database.put('tweets', data, data.id);
+            console.log("Retweets sent");
+        } catch(e) {
+            console.log("error on insert on IDB : "+e);
+        }
+        document.dispatchEvent(new CustomEvent('sync'));
     }
 
     handleComment(e) {
@@ -99,10 +122,11 @@ class TwitElement extends LitElement {
                     </header>
                     <main>
                         ${
-                            this.tweet.content !== "" ? html`
-                                <p style="color: #626262;">${this.tweet.content}</p>
-                            `: html`
+                            this.tweet.tweetReference ? html`
+                                référence
                                 <twit-element id="${this.tweet.tweetReference}"></twit-element>
+                            ` : html`
+                                <p style="color: #626262;">${this.tweet.content}</p>
                             `
                         }
                         ${
@@ -114,6 +138,7 @@ class TwitElement extends LitElement {
                     <footer>
                         <twit-button @click="${this.handleLike}" class="like">
                             <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="heart"><rect width="24" height="24" opacity="0"/><path d="M12 21a1 1 0 0 1-.71-.29l-7.77-7.78a5.26 5.26 0 0 1 0-7.4 5.24 5.24 0 0 1 7.4 0L12 6.61l1.08-1.08a5.24 5.24 0 0 1 7.4 0 5.26 5.26 0 0 1 0 7.4l-7.77 7.78A1 1 0 0 1 12 21zM7.22 6a3.2 3.2 0 0 0-2.28.94 3.24 3.24 0 0 0 0 4.57L12 18.58l7.06-7.07a3.24 3.24 0 0 0 0-4.57 3.32 3.32 0 0 0-4.56 0l-1.79 1.8a1 1 0 0 1-1.42 0L9.5 6.94A3.2 3.2 0 0 0 7.22 6z"/></g></g></svg>
+                            ${!this.tweet.likes ? "" : this.tweet.likes.length}
                         </twit-button>
                         <twit-button @click="${this.handleRetweet}" class="retweet">
                             <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="repeat"><rect width="24" height="24" opacity="0"/><path d="M17.91 5h-12l1.3-1.29a1 1 0 0 0-1.42-1.42l-3 3a1 1 0 0 0 0 1.42l3 3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42L5.91 7h12a1.56 1.56 0 0 1 1.59 1.53V11a1 1 0 0 0 2 0V8.53A3.56 3.56 0 0 0 17.91 5z"/><path d="M18.21 14.29a1 1 0 0 0-1.42 1.42l1.3 1.29h-12a1.56 1.56 0 0 1-1.59-1.53V13a1 1 0 0 0-2 0v2.47A3.56 3.56 0 0 0 6.09 19h12l-1.3 1.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3-3a1 1 0 0 0 0-1.42z"/></g></g></svg>
