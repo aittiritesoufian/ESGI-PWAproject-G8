@@ -63,6 +63,7 @@ class TwitApp extends LitElement {
                     await localbase.delete("tweets", idTweet);
 
                 } else if (tweets[j]['status'] == 2) {
+                    //sync from remote
                     firebase.firestore().collection("tweets").doc(idTweet).get().then(async doc => {
                         if (doc.exists) {
                             let tweet = doc.data();
@@ -134,7 +135,6 @@ class TwitApp extends LitElement {
             firebase.firestore().settings({
                 cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
             });
-
             firebase.firestore().enablePersistence();
             firebase.auth().onAuthStateChanged(user => {
                 if (!user) {

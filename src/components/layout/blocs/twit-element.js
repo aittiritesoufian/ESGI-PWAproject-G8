@@ -12,13 +12,23 @@ class TwitElement extends LitElement {
         this.id = "";
         this.tweet = {};
         this.author = {};
+        this.currentUser = {};
+    }
+
+    static get styles() {
+        return css`
+            .like {
+                cursor: pointer;
+            }
+        `;
     }
     
     static get properties(){
         return {
             id: String,
             tweet: Object,
-            author: Object
+            author: Object,
+            user: Object
         };
     }
 
@@ -28,10 +38,19 @@ class TwitElement extends LitElement {
                 db.createObjectStore('tweets');
             }
         });
+        this.user = firebase.auth().currentUser();
         if(this.id){
+            
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
+                    firebase.firestore().collection("users").doc(this.tweet.author).get().then(async doc2 => {
+                        if (doc2.exists) {
+                            this.author = doc2.data();
+                        }
+                    }).catch(function (error) {
+                        console.log("Error getting tweet:", error);
+                    });
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
@@ -41,7 +60,13 @@ class TwitElement extends LitElement {
             });
         } else {
             if (this.tweet.author != undefined && typeof (this.tweet.author) != "object" && this.tweet.author != ""){
-                this.author = await database.get('users', this.tweet.author);
+                firebase.firestore().collection("users").doc(this.tweet.author).get().then(async doc2 => {
+                    if (doc2.exists) {
+                        this.author = doc2.data();
+                    }
+                }).catch(function (error) {
+                    console.log("Error getting tweet:", error);
+                });
             }
             console.log("not on Element by ID");
         }
@@ -49,6 +74,10 @@ class TwitElement extends LitElement {
 
     handleLike(e) {
         // TODO: add a like to the current tweet
+        firebase.firestore().collection('tweets').doc(this.tweet.id).update({
+            likes: firebase.firestore.FieldValue.arrayUnion(this.user.uid)
+        }, { merge: true });
+        console.log("like added on tweet "+this.tweet.id+" for user "+this.user.id);
     }
 
     handleRetweet(e) {

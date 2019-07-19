@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit-element';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/auth';
 import checkConnectivity from '../system/connectivity.js';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
 // import sync from '../data/twit-sync.js';
@@ -49,7 +50,10 @@ class TwitStore extends LitElement {
         // if (this.connection) {
             // console.log("connection to store");
             this.data = [];
-        this.firestore = firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot({ includeMetadataChanges: true },ref => {
+            let user = firebase.auth().currentUser;
+            console.log("current user : ");
+            console.log(user);
+            this.firestore = firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot({ includeMetadataChanges: true },ref => {
                 ref.docChanges().forEach(async change => {
                     const { newIndex, oldIndex, doc, type } = change;
                     if (type == "added" || type == "updated") {
