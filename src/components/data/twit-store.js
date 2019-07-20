@@ -64,7 +64,7 @@ class TwitStore extends LitElement {
                             firebase.firestore().collection("users").doc(this.tweet.author).get().then(async doc2 => {
                                 if (doc2.exists) {
                                     this.author = doc2.data();
-                                    await database.put("users", this.author, doc2.id);
+                                    // await database.put("users", this.author, doc2.id);
                                 }
                             }).catch(function (error) {
                                 console.log("Error getting Author:", error);
@@ -74,10 +74,10 @@ class TwitStore extends LitElement {
                         }
                         this.data = [...this.data, this.tweet];
                         // console.log(this.tweet);
-                        this.data.map(async tweet => {
-                            // console.log('tweet save '+tweet.id);
-                            await database.put('tweets', tweet, tweet.id);
-                        });
+                        // this.data.map(async tweet => {
+                        //     // console.log('tweet save '+tweet.id);
+                        //     await database.put('tweets', tweet, tweet.id);
+                        // });
                         // sync();
                         // document.dispatchEvent(new CustomEvent('sync'));
                         this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
