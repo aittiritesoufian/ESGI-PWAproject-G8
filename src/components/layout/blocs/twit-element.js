@@ -17,8 +17,16 @@ class TwitElement extends LitElement {
 
     static get styles() {
         return css`
-            .like {
+            button {
                 cursor: pointer;
+                background: none;
+                border:none;
+            }
+            button:hover {
+                cursor: pointer;
+                background: none;
+                border:none;
+                color:#2d2d2d;
             }
         `;
     }
