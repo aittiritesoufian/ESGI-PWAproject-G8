@@ -56,7 +56,7 @@ class TwitStore extends LitElement {
             this.firestore = firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot({ includeMetadataChanges: true },ref => {
                 ref.docChanges().forEach(async change => {
                     const { newIndex, oldIndex, doc, type } = change;
-                    if (type == "added" || type == "modified") {
+                    if (type == "added") {
                         this.tweet = doc.data();
                         this.tweet.id = doc.id ? doc.id : "";
                         this.tweet.status = 0;
@@ -80,13 +80,19 @@ class TwitStore extends LitElement {
                         // });
                         // sync();
                         // document.dispatchEvent(new CustomEvent('sync'));
-                        this.dispatchEvent(new CustomEvent('newtweets', { detail: this.data }));
+                        this.dispatchEvent(new CustomEvent('listTweets', { detail: this.data }));
+                    } else if (type == "modified") {
+                        this.tweet = doc.data();
+                        this.tweet.id = doc.id ? doc.id : "";
+                        this.data.splice(oldIndex, 1, this.tweet);
+                        this.dispatchEvent(new CustomEvent('listTweets', { detail: this.data }));
+                        document.dispatchEvent(new CustomEvent('sync'));
                     } else if (type == 'removed') {
-                        console.log(doc.id);
-                        console.log("deleted from IDB ");
-                        // this.data.splice(oldIndex, 1);
-                        await database.delete('tweets', doc.id);
-                        // this.dispatchEvent(new CustomEvent('child-changed', { detail: this.data }));
+                        console.log(doc.id + " deleted!");
+                        this.data.splice(oldIndex, 1);
+                        // await database.delete('tweets', doc.id);
+                        this.dispatchEvent(new CustomEvent('listTweets', { detail: this.data }));
+                        document.dispatchEvent(new CustomEvent('sync'));
                     }
                 })
             });
