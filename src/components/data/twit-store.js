@@ -40,12 +40,12 @@ class TwitStore extends LitElement {
                 this.firstUpdated();
             }
         });
-        const database = await openDB('twitbook', 1, {
-            upgrade(db) {
-                db.createObjectStore('tweets');
-                db.createObjectStore('users');
-            }
-        });
+        // const database = await openDB('twitbook', 1, {
+        //     upgrade(db) {
+        //         db.createObjectStore('tweets');
+        //         db.createObjectStore('users');
+        //     }
+        // });
         
         // if (this.connection) {
             // console.log("connection to store");
@@ -70,15 +70,15 @@ class TwitStore extends LitElement {
                                 console.log("Error getting Author:", error);
                             });
                         } else {
-                            console.log('no author for tweet number : ' + this.id);
+                            console.log('no author for tweet number : ' + this.tweet.id);
                         }
                         this.data = [...this.data, this.tweet];
                         // console.log(this.tweet);
+                        // save on local storage
                         // this.data.map(async tweet => {
                         //     // console.log('tweet save '+tweet.id);
                         //     await database.put('tweets', tweet, tweet.id);
                         // });
-                        // sync();
                         // document.dispatchEvent(new CustomEvent('sync'));
                         this.dispatchEvent(new CustomEvent('listTweets', { detail: this.data }));
                     } else if (type == "modified") {
@@ -86,13 +86,11 @@ class TwitStore extends LitElement {
                         this.tweet.id = doc.id ? doc.id : "";
                         this.data.splice(oldIndex, 1, this.tweet);
                         this.dispatchEvent(new CustomEvent('listTweets', { detail: this.data }));
-                        document.dispatchEvent(new CustomEvent('sync'));
                     } else if (type == 'removed') {
                         console.log(doc.id + " deleted!");
                         this.data.splice(oldIndex, 1);
                         // await database.delete('tweets', doc.id);
                         this.dispatchEvent(new CustomEvent('listTweets', { detail: this.data }));
-                        document.dispatchEvent(new CustomEvent('sync'));
                     }
                 })
             });

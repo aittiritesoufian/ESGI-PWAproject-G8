@@ -56,6 +56,7 @@ class TwitElement extends LitElement {
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
+                    this.tweet.id = doc.id ? doc.id : null;
                     firebase.firestore().collection("users").doc(this.tweet.author).get().then(async doc2 => {
                         if (doc2.exists) {
                             this.author = doc2.data();
@@ -66,6 +67,9 @@ class TwitElement extends LitElement {
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
+                    this.tweet = {
+                        id: null
+                    };
                 }
             }).catch(function(error) {
                 console.log("Error getting Tweet:", error);
@@ -145,11 +149,17 @@ class TwitElement extends LitElement {
             console.log("tweete deletion succeed");
         });
         console.log("Tweet " + this.tweet.id + " deleted");
+        //delete retweets of this tweet
+        firebase.firestore().collection('tweets').doc(this.tweet.id).delete().then((e) => {
+            console.log("tweete deletion succeed");
+        });
         document.dispatchEvent(new CustomEvent('sync'));
     }
 
 	render(){
-		return html`
+        return this.tweet.id == null ? html`
+            <p>Le tweet d'origine à été supprimé !</p>
+        ` : html`
                 <div style="padding: 30px; border-top: 1px solid #f1f1f1; border-bottom: 1px solid #f1f1f1">
                     <header>
                         <a href="/profil/${this.author.slug}" style="text-decoration: none">
@@ -160,7 +170,7 @@ class TwitElement extends LitElement {
                     <main>
                         ${
                             this.tweet.tweetReference ? html`
-                                référence
+                                à retweeter ceci :
                                 <twit-element id="${this.tweet.tweetReference}"></twit-element>
                             ` : html`
                                 <p style="color: #626262;">${this.tweet.content}</p>
