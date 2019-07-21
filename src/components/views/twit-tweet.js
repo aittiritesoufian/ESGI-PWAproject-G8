@@ -4,6 +4,7 @@ import 'firebase/firestore';
 import "../layout/navigation/twit-header.js";
 import "../layout/navigation/twit-footer.js";
 import "../layout/blocs/twit-element";
+import "../layout/blocs/twit-comments";
 
 class TwitTweet extends LitElement {
 
@@ -42,6 +43,7 @@ class TwitTweet extends LitElement {
         return html`
             <twit-header></twit-header>
             <twit-element .tweet="${this.tweet}"></twit-element>
+            <twit-comments tweet_id="${this.tweet.id}"></twit-comments>
             <twit-footer></twit-footer>
        `;
     }
