@@ -114,24 +114,56 @@ class TwitElement extends LitElement {
         }
     }
 
-    async handleRetweet(e) {
+    async retweet(){
         const database = await openDB('twitbook', 1, {
             upgrade(db) {
                 db.createObjectStore('tweets');
             }
         });
-        // TODO: publish a new tweet with tweetReference in place of content
+        //publish a new tweet with tweetReference in place of content
         let data = {
             tweetReference: this.tweet.id,
             date: new Date().getTime()
         }
         data.status = 1;
         data.id = "local" + Math.floor(Math.random() * 1000);
-        try{
+        try {
             await database.put('tweets', data, data.id);
-            console.log("Retweets sent");
-        } catch(e) {
-            console.log("error on insert on IDB : "+e);
+            console.log("Retweet sent");
+        } catch (e) {
+            console.log("error on insert on IDB : " + e);
+        }
+        //add reference to current user who retweeted
+        firebase.firestore().collection('tweets').doc(this.tweet.id).update({
+            retweets: firebase.firestore.FieldValue.arrayUnion(this.user.uid)
+        });
+        console.log("retweet added on tweet " + this.tweet.id + " for user " + this.user.uid);
+        document.dispatchEvent(new CustomEvent('sync'));
+    }
+
+    async unretweet() {
+        //delete tweet generated for retweet
+        firebase.firestore().collection('tweets').doc(this.tweet.id).update({
+            retweets: firebase.firestore.FieldValue.arrayRemove(this.user.uid)
+        });
+        //remove the reference to current user who unretweeted
+        firebase.firestore().collection('tweets').where('tweetReference', '==', this.tweet.id).get().then((querySnapshot) => {
+            querySnapshot.forEach(function (doc) {
+                console.log("removing tweet : " + doc.ref);
+                doc.ref.delete();
+            })
+        });
+        console.log("tweet reference to " + this.tweet.id + " for user " + this.user.uid+ " has been droped!");
+        document.dispatchEvent(new CustomEvent('sync'));
+    }
+
+    async handleRetweet(e) {
+        if (this.tweet.retweets && this.tweet.retweets.indexOf(this.user.uid) < 0) {
+            await this.retweet();
+        } else if (this.tweet.retweets && this.tweet.retweets.indexOf(this.user.uid) >= 0) {
+            await this.unretweet();
+        } else {
+            await this.retweet();
         }
         document.dispatchEvent(new CustomEvent('sync'));
     }
@@ -191,6 +223,7 @@ class TwitElement extends LitElement {
                         r
                             <fa-icon id="icon-home" class="fas fa-trash-alt" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="repeat"><rect width="24" height="24" opacity="0"/><path d="M17.91 5h-12l1.3-1.29a1 1 0 0 0-1.42-1.42l-3 3a1 1 0 0 0 0 1.42l3 3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42L5.91 7h12a1.56 1.56 0 0 1 1.59 1.53V11a1 1 0 0 0 2 0V8.53A3.56 3.56 0 0 0 17.91 5z"/><path d="M18.21 14.29a1 1 0 0 0-1.42 1.42l1.3 1.29h-12a1.56 1.56 0 0 1-1.59-1.53V13a1 1 0 0 0-2 0v2.47A3.56 3.56 0 0 0 6.09 19h12l-1.3 1.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3-3a1 1 0 0 0 0-1.42z"/></g></g></svg> -->
+                            ${!this.tweet.retweets ? "0" : this.tweet.retweets.length}
                         </button>
                         <button @click="${this.handleComment}" class="comment">
                         c
