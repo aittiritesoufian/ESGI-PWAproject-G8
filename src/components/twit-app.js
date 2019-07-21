@@ -4,6 +4,7 @@ import firebase from 'firebase/app';
 import "./views/twit-home.js";
 import "./views/twit-profile.js";
 import "./views/twit-post.js";
+import "./views/twit-tweet.js";
 import checkConnectivity from './system/connectivity.js';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
 // import sync from './data/twit-sync.js';
@@ -107,6 +108,10 @@ class TwitApp extends LitElement {
             {
                 path: '/post',
                 component: 'twit-post'
+            },
+            {
+                path: '/tweet/:id',
+                component: 'twit-tweet'
             }
             // {
             //     path: '(.*)',
