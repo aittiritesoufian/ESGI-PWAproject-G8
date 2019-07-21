@@ -12,6 +12,7 @@ class TwitProfile extends LitElement {
 
     constructor() {
         super();
+        this.currentUser = {};
         this.people = {};
         this.tab = "tweets";
         this.tweets = [];
@@ -102,6 +103,7 @@ class TwitProfile extends LitElement {
 
     static get properties(){
         return {
+            currentUser: Object,
             people: Object,
             tab: String,
             avatar: Object,
@@ -119,6 +121,44 @@ class TwitProfile extends LitElement {
 
     handleAvatar(e) {
         this.shadowRoot.querySelector("#avatar").click();
+    }
+
+    handleFollow(e) {
+        // follow
+        firebase.firestore().collection('users').doc(this.currentUser.uid).update({
+            subscriptions: firebase.firestore.FieldValue.arrayUnion(this.people.id)
+        }).then((ref) => {
+            console.log("Vous êtes abonné !");
+        }).catch((error) => {
+            console.log('erreur dans l\'ajout de l\'abonnement');
+        });
+        //add on the subscribed "subscribers" attribute
+        firebase.firestore().collection('users').doc(this.people.id).update({
+            subscribers: firebase.firestore.FieldValue.arrayUnion(this.currentUser.uid)
+        }).then((ref) => {
+            console.log("Référence ajoutée à l'abonné !");
+        }).catch((error) => {
+            console.log('erreur dans l\'ajout de l\'abonné');
+        });
+    }
+
+    handleUnFollow(e){
+        // unfollow
+        firebase.firestore().collection('users').doc(this.currentUser.uid).update({
+            subscriptions: firebase.firestore.FieldValue.arrayRemove(this.people.id)
+        }).then((ref) => {
+            console.log("Vous n'êtes plus abonné !");
+        }).catch((error) => {
+            console.log('erreur dans la suppression de l\'abonnement');
+        });
+        //remove from the subscribed "subscribers" attribute
+        firebase.firestore().collection('users').doc(this.people.id).update({
+            subscribers: firebase.firestore.FieldValue.arrayRemove(this.currentUser.uid)
+        }).then((ref) => {
+            console.log("Référence supprimée chez l'abonné !");
+        }).catch((error) => {
+            console.log('erreur dans la suppression de l\'abonné');
+        });
     }
 
     submitAvatar(e){
@@ -170,6 +210,16 @@ class TwitProfile extends LitElement {
 
     firstUpdated(){
         console.log("heer !!!!");
+        document.addEventListener('user-logged', (event) => {
+            this.currentUser = event.detail.user;
+            // get current user informations
+            firebase.firestore().collection('users').doc(this.currentUser.uid).get().then((doc) => {
+                this.currentUser = doc.data();
+                this.currentUser.uid = doc.id;
+            }).catch((error) => {
+                console.log('Current user hasn\'t profile information');
+            });
+        });
         if (this.location.params.slug){
             // get current user informations
             firebase.firestore().collection('users').doc(this.location.params.slug).get().then((doc) => {
@@ -210,6 +260,7 @@ class TwitProfile extends LitElement {
             //current user
             document.addEventListener('user-logged', (event) => {
                 let user = event.detail.user;
+                this.currentUser = event.detail.user;
                 // get current user informations
                 firebase.firestore().collection('users').doc(user.uid).get().then((doc) => {
                     this.people = doc.data();
@@ -277,10 +328,20 @@ class TwitProfile extends LitElement {
                             <section class="profil-infos">
                                 <h1>${this.people.name}</h1>
                                 <p>${this.people.description}</p>
-                                <span class="stats">${this.people.subscriptions ? this.people.subscriptions : "0"} Abonnements ${this.people.subscribers ? this.people.subscribers : "0"} Abonnées</span>
+                                <span class="stats">${this.people.subscriptions ? this.people.subscriptions.length : "0"} Abonnements ${this.people.subscribers ? this.people.subscribers.length : "0"} Abonnées</span>
                             </section>
                         </header>
                         <main>
+                            <section class="subscription">
+                            ${
+                                (this.currentUser.subscriptions && this.currentUser.subscriptions.indexOf(this.people.id) >= 0) ? html`
+                                    <button @click="${this.handleUnFollow}" class="unfollow">Ne plus suivre</button>
+                                `: html`
+                                    <button @click="${this.handleFollow}" class="follow">Suivre</button>
+                                    
+                                `
+                            }
+                            </section>
                             <section class="tabs">
                                 <ul>
                                     <li class="${this.tab =='tweets' ? 'active':''}" @click="${(e)=> {this.tab = 'tweets'}}">Tweets</li>
