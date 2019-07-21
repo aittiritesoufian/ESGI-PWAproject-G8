@@ -1,0 +1,16 @@
+{
+  "name": "TwitBook",
+  "short_name": "TwitBook",
+  "description": "This is à TwitBook!",
+  "icons": [
+    {
+      "src": "src/assets/images/1f680.png",
+      "sizes": "800x864",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "",
+  "display": "standalone",
+  "theme_color": "#111111",
+  "background_color": "#ffffff"
+}
