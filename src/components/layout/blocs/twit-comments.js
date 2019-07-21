@@ -28,11 +28,9 @@ class TwitComments extends LitElement {
                 display: flex;
                 flex-wrap: wrap;
                 align-items: stretch;
+                margin-bottom: 9%; 
             }
             div.modal {
-                width: 90%;
-                margin-left: 5%;
-                margin-top:10%;
                 padding:10px;
                 z-index:99;
             }
@@ -50,7 +48,7 @@ class TwitComments extends LitElement {
                 border-radius: 5px;
                 border: 0px;
                 padding:5px 10px;
-                background-color: blue;
+                background-color: #00BFFF;
                 color:#fff;
             }
             button:hover {

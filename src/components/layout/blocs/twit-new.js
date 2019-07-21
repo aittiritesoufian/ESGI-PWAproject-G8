@@ -101,22 +101,25 @@ class TwitNew extends LitElement {
                 }
             );
         } else {
-            const database = await openDB('twitbook', 1, {
-                upgrade(db) {
-                    db.createObjectStore('tweets');
-                }
-            });
-            data.status = 1;
-            data.id = "local" + Math.floor(Math.random() * 1000);
-            try{
-                await database.put('tweets', data, data.id);
-                console.log("Tweet only sent");
-            } catch(e) {
-                console.log("error on insert on IDB : "+e);
-            }
+            // const database = await openDB('twitbook', 1, {
+            //     upgrade(db) {
+            //         db.createObjectStore('tweets');
+            //     }
+            // });
+            // data.status = 1;
+            // data.id = "local" + Math.floor(Math.random() * 1000);
+            // try{
+            //     await database.put('tweets', data, data.id);
+            //     console.log("Tweet only sent");
+            // } catch(e) {
+            //     console.log("error on insert on IDB : "+e);
+            // }
+            const database = firebase.firestore();
+            database.collection('tweets').add(data);
+            console.log("Tweet without file sent");
             window.location.replace('/');
         }
-        document.dispatchEvent(new CustomEvent('sync'));
+        // document.dispatchEvent(new CustomEvent('sync'));
         // sync();
     }
 
@@ -144,7 +147,7 @@ class TwitNew extends LitElement {
                 border-radius: 15px;
                 opacity: 0.2;
                 background-color: rgb(169, 169, 169);
-                font-size: 20px;
+                font-size: 15px;
             }
             
             button, btn {
@@ -157,6 +160,7 @@ class TwitNew extends LitElement {
                 border-radius: 20px;
                 padding: 2px 2px;
                 padding-top: 2px;
+                color:#fff;
             }
            
             button:hover {
@@ -175,7 +179,6 @@ class TwitNew extends LitElement {
                 font-size: 20px;
                 
             }
-
             img { 
                 border: 3px solid black;
                 border-radius: 15px;

@@ -187,6 +187,10 @@ self.__precacheManifest = [
     "revision": "08d3c1a2322c52e2689758fb0bd6c912"
   },
   {
+    "url": "/node_modules/firebase/firestore/dist/index.esm.js",
+    "revision": "08d3c1a2322c52e2689758fb0bd6c912"
+  },
+  {
     "url": "/node_modules/lit-html/lib/default-template-processor.js",
     "revision": "e96dc25c4a6ab961d383723b243bacb1"
   },
@@ -200,6 +204,14 @@ self.__precacheManifest = [
   },
   {
     "url": "/node_modules/@firebase/app/dist/index.esm.js",
+    "revision": "d24daec20065370d69db1eea3ca14252"
+  },
+  {
+    "url": "/node_modules/@firebase/util/dist/index.esm.js",
+    "revision": "d24daec20065370d69db1eea3ca14252"
+  },
+  {
+    "url": "/node_modules/fa-icons/index.js",
     "revision": "d24daec20065370d69db1eea3ca14252"
   },
   {

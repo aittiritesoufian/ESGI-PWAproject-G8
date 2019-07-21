@@ -21,6 +21,9 @@ class TwitElement extends LitElement {
 
     static get styles() {
         return css`
+            :root {
+                margin-bottom: 9%; 
+            }
             button {
                 cursor: pointer;
                 background: none;
@@ -224,17 +227,17 @@ class TwitElement extends LitElement {
                         </button>
                         ${!this.tweet.likes ? "0" : this.tweet.likes.length}
                         <button @click="${this.handleRetweet}" class="retweet">
-                            <fa-icon id="icon-home" class="fas fa-trash-alt" color=${this.style.color} size=${this.style.size}></fa-icon>
+                            <fa-icon id="icon-home" class="fas fa-sync" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="repeat"><rect width="24" height="24" opacity="0"/><path d="M17.91 5h-12l1.3-1.29a1 1 0 0 0-1.42-1.42l-3 3a1 1 0 0 0 0 1.42l3 3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42L5.91 7h12a1.56 1.56 0 0 1 1.59 1.53V11a1 1 0 0 0 2 0V8.53A3.56 3.56 0 0 0 17.91 5z"/><path d="M18.21 14.29a1 1 0 0 0-1.42 1.42l1.3 1.29h-12a1.56 1.56 0 0 1-1.59-1.53V13a1 1 0 0 0-2 0v2.47A3.56 3.56 0 0 0 6.09 19h12l-1.3 1.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3-3a1 1 0 0 0 0-1.42z"/></g></g></svg> -->
                         </button>
                         ${!this.tweet.retweets ? "0" : this.tweet.retweets.length}
                         <a href="/tweet/${this.tweet.id}" class="comment">
-                            <fa-icon id="icon-home" class="far fa-sync-alt" color=${this.style.color} size=${this.style.size}></fa-icon>
+                            <fa-icon id="icon-home" class="far fa-comment-dots" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="message-square"><rect width="24" height="24" opacity="0"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/><circle cx="8" cy="11" r="1"/><path d="M19 3H5a3 3 0 0 0-3 3v15a1 1 0 0 0 .51.87A1 1 0 0 0 3 22a1 1 0 0 0 .51-.14L8 19.14a1 1 0 0 1 .55-.14H19a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm1 13a1 1 0 0 1-1 1H8.55a3 3 0 0 0-1.55.43l-3 1.8V6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1z"/></g></g></svg> -->
                             ${!this.tweet.replies ? "0" : this.tweet.replies.length}
                         </a>
                         <button @click="${this.handleDelete}" class="delete">
-                            <fa-icon id="icon-home" class="far fa-comment-dots" color=${this.style.color} size=${this.style.size}></fa-icon>
+                            <fa-icon id="icon-home" class="far fa-trash-alt" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="message-square"><rect width="24" height="24" opacity="0"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/><circle cx="8" cy="11" r="1"/><path d="M19 3H5a3 3 0 0 0-3 3v15a1 1 0 0 0 .51.87A1 1 0 0 0 3 22a1 1 0 0 0 .51-.14L8 19.14a1 1 0 0 1 .55-.14H19a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm1 13a1 1 0 0 1-1 1H8.55a3 3 0 0 0-1.55.43l-3 1.8V6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1z"/></g></g></svg> -->
                         </button>
                     </footer>
