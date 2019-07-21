@@ -3,8 +3,8 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import "../layout/navigation/twit-header.js";
 import "../layout/navigation/twit-footer.js";
-import "../layout/blocs/twit-element";
-import "../layout/blocs/twit-comments";
+import "../layout/blocs/twit-element.js";
+import "../layout/blocs/twit-comments.js";
 
 class TwitTweet extends LitElement {
 
@@ -21,9 +21,8 @@ class TwitTweet extends LitElement {
         };
     }
 
-    firstUpdated() {
-        
-        firebase.firestore().collection("tweets").doc(this.location.params.id).get().then(doc => {
+    async firstUpdated() {
+        await firebase.firestore().collection("tweets").doc(this.location.params.id).get().then(doc => {
             if (doc.exists) {
                 this.tweet = doc.data();
                 this.tweet.id = doc.id ? doc.id : null;
@@ -43,7 +42,11 @@ class TwitTweet extends LitElement {
         return html`
             <twit-header></twit-header>
             <twit-element .tweet="${this.tweet}"></twit-element>
-            <twit-comments tweet_id="${this.tweet.id}"></twit-comments>
+            ${
+                this.tweet.id ? html`
+                    <twit-comments .tweet_id="${this.tweet.id}"></twit-comments>
+                ` : ""
+            }
             <twit-footer></twit-footer>
        `;
     }

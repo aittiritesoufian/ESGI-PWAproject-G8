@@ -24,6 +24,17 @@ class TwitApp extends LitElement {
         };
     }
 
+    static get styles() {
+        return css`
+            :root > .leaving {
+                animation: 1s fadeOut ease-in-out;
+            }
+            :root > .entering {
+                animation: 1s fadeIn linear;
+            }
+        `;
+    }
+
     async twitSync() {
         console.log("sync start");
         if (this.connection === true) {

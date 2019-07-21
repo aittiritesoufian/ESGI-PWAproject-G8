@@ -16,6 +16,7 @@ class TwitNew extends LitElement {
         this.file = {};
         this.uploader = 0;
         this.connection = false;
+        this.reply_to = "";
     }
     
     static get properties(){
@@ -26,14 +27,13 @@ class TwitNew extends LitElement {
             file:Object,
             attachment: String,
             uploader: Number,
-            connection: Boolean
+            connection: Boolean,
+            reply_to: String
         };
     }
 
     firstUpdated() {
-        document.addEventListener('user-logged', (event) => {
-            this.author = event.detail.user.uid;
-        });
+        this.author = firebase.auth().currentUser.uid;
         document.addEventListener('connection-changed', (event) => {
             this.connection = event.detail;
         });
@@ -45,6 +45,9 @@ class TwitNew extends LitElement {
         let data = {
             content: this.content,
             date: new Date().getTime()
+        }
+        if(this.reply_to != ""){
+            data.reply_to = this.reply_to;
         }
         if (this.file.length > 0 && this.connection) {
             //create storage ref
