@@ -3,7 +3,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 import "./twit-pic.js";
-// import 'fa-icons';
+import 'fa-icons';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
 
 class TwitElement extends LitElement {

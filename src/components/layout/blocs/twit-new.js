@@ -3,7 +3,6 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
-import 'fa-icons';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
 // import sync from '../../data/twit-sync.js';
 

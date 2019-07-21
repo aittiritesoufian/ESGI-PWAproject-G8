@@ -5,7 +5,7 @@ import 'firebase/auth';
 import "./twit-pic.js";
 import "./twit-element";
 import "./twit-new.js";
-// import 'fa-icons';
+import 'fa-icons';
 
 class TwitComments extends LitElement {
 
