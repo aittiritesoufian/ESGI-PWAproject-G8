@@ -133,10 +133,20 @@ class TwitElement extends LitElement {
     }
 
     like(){
+        //add like to tweet
         firebase.firestore().collection('tweets').doc(this.tweet.id).update({
             likes: firebase.firestore.FieldValue.arrayUnion(this.user.uid)
         });
         console.log("like added on tweet " + this.tweet.id + " for user " + this.user.uid);
+        //add tweet reference on likes of current user
+        firebase.firestore().collection('users').doc(this.user.uid).update({
+            likes: firebase.firestore.FieldValue.arrayUnion(this.tweet.id)
+        }).then((ref) => {
+            console.log('tweet references added to likes on user');
+        }).catch((error) => {
+            console.log('error on adding tweet reference to users\'s likes');
+            console.log(error);
+        });
         document.dispatchEvent(new CustomEvent('sync'));
     }
 
