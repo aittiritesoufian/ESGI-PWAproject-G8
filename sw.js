@@ -27,6 +27,10 @@ self.addEventListener('message', (event) => {
  */
 self.__precacheManifest = [
   {
+    "url": "/1f680.png",
+    "revision": "07b2ee590134e809c933854af501f9db"
+  },
+  {
     "url": "/config.js",
     "revision": "07b2ee590134e809c933854af501f9db"
   },
@@ -59,7 +63,7 @@ self.__precacheManifest = [
     "revision": "dc6fc896d5e4b766ee365743a25bcfca"
   },
   {
-    "url": "/src/components/layout/blocs/twit-button.js",
+    "url": "/src/components/layout/blocs/twit-comments.js",
     "revision": "1120e3e8b0d2bce5378ea6e7710a8b3f"
   },
   {
@@ -105,6 +109,10 @@ self.__precacheManifest = [
   {
     "url": "/src/components/views/twit-profile.js",
     "revision": "7490160227e27a16e55e25ae1f40ae12"
+  },
+  {
+    "url": "/src/components/views/twit-tweet.js",
+    "revision": "1744c78524339333fc1a296a8d11baf9"
   },
   {
     "url": "/node_modules/idb/build/esm/index.js",

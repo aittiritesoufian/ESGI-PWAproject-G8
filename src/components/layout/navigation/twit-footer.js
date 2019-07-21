@@ -10,14 +10,18 @@ class TwitFooter extends LitElement {
         this.size = "1.5em";
     }
 
-   /* firstUpdated() {
+    firstUpdated() {
 
         document.addEventListener('connection-changed', ({detail}) => {
-            this.color = "#00BFFF";
+            if (detail){
+                this.color = "#00BFFF";
+            } else {
+                this.color = "#eeeeee";
+            }
         });
 
     }
-*/
+
     static get properties(){
         return {
             tab: String,

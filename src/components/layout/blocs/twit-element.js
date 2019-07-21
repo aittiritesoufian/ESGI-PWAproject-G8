@@ -14,7 +14,7 @@ class TwitElement extends LitElement {
         this.tweet = {};
         this.author = {};
         this.style = {
-            color: "#2d2d2d",
+            color: "#eeeeee",
             size: "1.5em"
         };
     }
@@ -52,7 +52,14 @@ class TwitElement extends LitElement {
         };
     }
 
-    async firstUpdated(){
+    async firstUpdated() {
+        document.addEventListener('connection-changed', ({ detail }) => {
+            if (detail) {
+                this.style.color = "#00BFFF";
+            } else {
+                this.style.color = "#eeeeee";
+            }
+        });
         this.user = firebase.auth().currentUser;
         if(this.id){
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
@@ -212,25 +219,21 @@ class TwitElement extends LitElement {
                     </main>
                     <footer>
                         <button @click="${this.handleLike}" class="like">
-                        l
                             <fa-icon id="icon-home" class="far fa-heart" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="heart"><rect width="24" height="24" opacity="0"/><path d="M12 21a1 1 0 0 1-.71-.29l-7.77-7.78a5.26 5.26 0 0 1 0-7.4 5.24 5.24 0 0 1 7.4 0L12 6.61l1.08-1.08a5.24 5.24 0 0 1 7.4 0 5.26 5.26 0 0 1 0 7.4l-7.77 7.78A1 1 0 0 1 12 21zM7.22 6a3.2 3.2 0 0 0-2.28.94 3.24 3.24 0 0 0 0 4.57L12 18.58l7.06-7.07a3.24 3.24 0 0 0 0-4.57 3.32 3.32 0 0 0-4.56 0l-1.79 1.8a1 1 0 0 1-1.42 0L9.5 6.94A3.2 3.2 0 0 0 7.22 6z"/></g></g></svg> -->
-                            ${!this.tweet.likes ? "0" : this.tweet.likes.length}
                         </button>
+                        ${!this.tweet.likes ? "0" : this.tweet.likes.length}
                         <button @click="${this.handleRetweet}" class="retweet">
-                        r
                             <fa-icon id="icon-home" class="fas fa-trash-alt" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="repeat"><rect width="24" height="24" opacity="0"/><path d="M17.91 5h-12l1.3-1.29a1 1 0 0 0-1.42-1.42l-3 3a1 1 0 0 0 0 1.42l3 3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42L5.91 7h12a1.56 1.56 0 0 1 1.59 1.53V11a1 1 0 0 0 2 0V8.53A3.56 3.56 0 0 0 17.91 5z"/><path d="M18.21 14.29a1 1 0 0 0-1.42 1.42l1.3 1.29h-12a1.56 1.56 0 0 1-1.59-1.53V13a1 1 0 0 0-2 0v2.47A3.56 3.56 0 0 0 6.09 19h12l-1.3 1.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3-3a1 1 0 0 0 0-1.42z"/></g></g></svg> -->
-                            ${!this.tweet.retweets ? "0" : this.tweet.retweets.length}
                         </button>
+                        ${!this.tweet.retweets ? "0" : this.tweet.retweets.length}
                         <a href="/tweet/${this.tweet.id}" class="comment">
-                        c
                             <fa-icon id="icon-home" class="far fa-sync-alt" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="message-square"><rect width="24" height="24" opacity="0"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/><circle cx="8" cy="11" r="1"/><path d="M19 3H5a3 3 0 0 0-3 3v15a1 1 0 0 0 .51.87A1 1 0 0 0 3 22a1 1 0 0 0 .51-.14L8 19.14a1 1 0 0 1 .55-.14H19a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm1 13a1 1 0 0 1-1 1H8.55a3 3 0 0 0-1.55.43l-3 1.8V6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1z"/></g></g></svg> -->
                             ${!this.tweet.replies ? "0" : this.tweet.replies.length}
                         </a>
                         <button @click="${this.handleDelete}" class="delete">
-                        d
                             <fa-icon id="icon-home" class="far fa-comment-dots" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="message-square"><rect width="24" height="24" opacity="0"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/><circle cx="8" cy="11" r="1"/><path d="M19 3H5a3 3 0 0 0-3 3v15a1 1 0 0 0 .51.87A1 1 0 0 0 3 22a1 1 0 0 0 .51-.14L8 19.14a1 1 0 0 1 .55-.14H19a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm1 13a1 1 0 0 1-1 1H8.55a3 3 0 0 0-1.55.43l-3 1.8V6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1z"/></g></g></svg> -->
                         </button>
