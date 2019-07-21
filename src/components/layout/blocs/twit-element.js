@@ -176,13 +176,9 @@ class TwitElement extends LitElement {
     handleDelete(e) {
         // TODO: delete current tweet
         firebase.firestore().collection('tweets').doc(this.tweet.id).delete().then((e) => {
-            console.log("tweete deletion succeed");
+            console.log("tweet deletion succeed");
         });
         console.log("Tweet " + this.tweet.id + " deleted");
-        //delete retweets of this tweet
-        firebase.firestore().collection('tweets').doc(this.tweet.id).delete().then((e) => {
-            console.log("tweete deletion succeed");
-        });
         document.dispatchEvent(new CustomEvent('sync'));
     }
 
