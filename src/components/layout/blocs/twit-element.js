@@ -37,6 +37,7 @@ class TwitElement extends LitElement {
             }
             h1 {
                 display: inline-block;
+                padding-left:10px;
             }
             footer > a {
                 text-decoration:none;
@@ -49,6 +50,28 @@ class TwitElement extends LitElement {
                 padding: 16px;
                 border: 1px solid #ededed;
                 position:relative;
+                display: block;
+            }
+            header a {
+                flex-direction: row;
+                align-items: center;
+                display: flex;
+            }
+            .icon-zone {
+                width: 50px;
+                height: 50px;
+                background-color: rgb(255, 255, 255);
+                position: relative;
+                border-radius: 50%;
+                overflow: hidden;
+                flex-direction: row;
+                align-items: center;
+                display: flex;
+            }
+            .icon-zone > img {
+                width:100%;
+                height:100%;
+                position: relative;
                 display: block;
             }
         `;
@@ -207,7 +230,16 @@ class TwitElement extends LitElement {
                 <div style="padding: 30px; border-top: 1px solid #f1f1f1; border-bottom: 1px solid #f1f1f1">
                     <header>
                         <a href="/profil/${this.author.slug}" style="text-decoration: none">
-                            <img src="${this.author.avatar}" />
+                            <div class="icon-zone">
+                                ${
+                                    this.author.avatar ? html`
+                                        <twit-pic ref="${this.author.avatar}"></twit-pic>
+                                    `
+                                    : html `
+                                        <img src="/1f680.png"/>
+                                    `
+                                }
+                            </div>
                             <h1 style="color: #1e79d2; font-size: 1.2rem;">${this.author.name}</h1>
                         </a>
                     </header>
