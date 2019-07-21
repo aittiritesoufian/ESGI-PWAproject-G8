@@ -13,7 +13,6 @@ class TwitElement extends LitElement {
         this.id = "";
         this.tweet = {};
         this.author = {};
-        this.currentUser = {};
         this.style = {
             color: "#2d2d2d",
             size: "1.5em"
@@ -52,7 +51,6 @@ class TwitElement extends LitElement {
     async firstUpdated(){
         this.user = firebase.auth().currentUser;
         if(this.id){
-            
             firebase.firestore().collection("tweets").doc(this.id).get().then(doc => {
                 if (doc.exists) {
                     this.tweet = doc.data();
