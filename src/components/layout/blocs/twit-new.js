@@ -1,8 +1,11 @@
 import { LitElement, html, css } from 'lit-element';
 import firebase from 'firebase/app';
+import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 import 'fa-icons';
+import { openDB } from '/node_modules/idb/build/esm/index.js';
+// import sync from '../../data/twit-sync.js';
 
 class TwitNew extends LitElement {
 
@@ -14,6 +17,8 @@ class TwitNew extends LitElement {
         this.attachment = "";
         this.file = {};
         this.uploader = 0;
+        this.connection = false;
+        this.reply_to = "";
     }
     
     static get properties(){
@@ -23,31 +28,41 @@ class TwitNew extends LitElement {
             content: String,
             file:Object,
             attachment: String,
-            uploader: Number
+            uploader: Number,
+            connection: Boolean,
+            reply_to: String
         };
     }
 
     firstUpdated() {
         document.addEventListener('user-logged', (event) => {
             this.author = event.detail.user.uid;
+            console.log('current user on twit-new : ');
+            console.log(this.author);
+        });
+        document.addEventListener('connection-changed', (event) => {
+            this.connection = event.detail;
         });
     }
 
-    handleTweet(e) {
+    async handleTweet(e) {
         e.preventDefault();
         //init data for tweet
         let data = {
             content: this.content,
-            author: this.author,
-            date: new Date().getTime()
+            date: new Date().getTime(),
+            author: this.author
         }
-        if (this.file.length > 0) {
+        if(this.reply_to != ""){
+            data.reply_to = this.reply_to;
+        }
+        if (this.file.length > 0 && this.connection) {
             //create storage ref
             const firestorage = firebase.storage();
             let ref = 'tweets_pic/' + this.author + "/" + this.file[0].name;
             let storageRef = firestorage.ref(ref);
             let content = this.content;
-            let author = this.author;
+            // let author = this.author;
 
             // //upload file
             let task = storageRef.put(this.file[0]);
@@ -87,11 +102,23 @@ class TwitNew extends LitElement {
                 }
             );
         } else {
-            const database = firebase.firestore();
-            database.collection('tweets').add(data);
-            console.log("Tweet only sent");
+            const database = await openDB('twitbook', 1, {
+                upgrade(db) {
+                    db.createObjectStore('tweets');
+                }
+            });
+            data.status = 1;
+            data.id = "local" + Math.floor(Math.random() * 1000);
+            try{
+                await database.put('tweets', data, data.id);
+                console.log("Tweet only sent");
+            } catch(e) {
+                console.log("error on insert on IDB : "+e);
+            }
             window.location.replace('/');
         }
+        document.dispatchEvent(new CustomEvent('sync'));
+        // sync();
     }
 
     static get styles(){
@@ -170,7 +197,8 @@ class TwitNew extends LitElement {
                 <textarea placeholder="Quoi de neuf ?" @change="${e => this.content = e.target.value}">${this.content}</textarea>
                 <section class="actions">
                     <button type="submit">Tweeter</button>
-                    <input type="file" class="btn"  @input="${e => this.file = e.target.files}"> 
+                    ${this.connection ? html `<input type="file" class="btn" @input="${e => this.file = e.target.files}">`
+                        : html`` }
                 </section>
             </form>
 		`;
