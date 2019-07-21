@@ -363,7 +363,7 @@ class TwitProfile extends LitElement {
                                     `
                                     : html `
                                         ${this.people.likes ? this.people.likes.map(tweet => html`
-                                            <twit-element .tweet="${tweet}"></twit-element>
+                                            <twit-element .id="${tweet}"></twit-element>
                                         `) : ""}
                                     `
                                 }
