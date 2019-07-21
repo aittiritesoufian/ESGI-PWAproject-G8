@@ -4,6 +4,7 @@ import firebase from 'firebase/app';
 import "./views/twit-home.js";
 import "./views/twit-profile.js";
 import "./views/twit-post.js";
+import "./views/twit-tweet.js";
 import checkConnectivity from './system/connectivity.js';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
 // import sync from './data/twit-sync.js';
@@ -21,6 +22,17 @@ class TwitApp extends LitElement {
             connection: Boolean,
             user: Object
         };
+    }
+
+    static get styles() {
+        return css`
+            :root > .leaving {
+                animation: 1s fadeOut ease-in-out;
+            }
+            :root > .entering {
+                animation: 1s fadeIn linear;
+            }
+        `;
     }
 
     async twitSync() {
@@ -63,6 +75,7 @@ class TwitApp extends LitElement {
                     await localbase.delete("tweets", idTweet);
 
                 } else if (tweets[j]['status'] == 2) {
+                    //sync from remote
                     firebase.firestore().collection("tweets").doc(idTweet).get().then(async doc => {
                         if (doc.exists) {
                             let tweet = doc.data();
@@ -97,18 +110,19 @@ class TwitApp extends LitElement {
         router.setRoutes([
             {
                 path: '/',
-                component: 'twit-home',
-                action: () => import("./views/twit-home.js")
+                component: 'twit-home'
             },
             {
                 path: '/profil',
-                component: 'twit-profile',
-                action: () => import("./views/twit-profile.js")
+                component: 'twit-profile'
             },
             {
                 path: '/post',
-                component: 'twit-post',
-                action: () => import("./views/twit-post.js")
+                component: 'twit-post'
+            },
+            {
+                path: '/tweet/:id',
+                component: 'twit-tweet'
             }
             // {
             //     path: '(.*)',
@@ -134,6 +148,10 @@ class TwitApp extends LitElement {
         if (this.connection) {
             console.log('online');
             firebase.initializeApp(document.config);
+            firebase.firestore().settings({
+                cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+            });
+            firebase.firestore().enablePersistence();
             firebase.auth().onAuthStateChanged(user => {
                 if (!user) {
                     localStorage.setItem('logged', false);

@@ -1,3 +1,4 @@
+import firebase from 'firebase/app';
 let tStart = null;
 let tEnd = null;
 let image = new Image();
@@ -70,6 +71,21 @@ function reset() {
 }
 
 function changeConnectivity(state) {
+  if(state == false){
+    if (firebase.apps.length){
+      firebase.firestore().disableNetwork()
+        .then(function () {
+          console.log('firebase offline mode');
+        });
+    }
+  } else {
+    if (firebase.apps.length) {
+      firebase.firestore().enableNetwork()
+        .then(function () {
+          console.log('firebase online mode');
+        });
+    }
+  }
   const event = new CustomEvent('connection-changed', {
     detail: state
   });
