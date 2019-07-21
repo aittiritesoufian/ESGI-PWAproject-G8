@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import firebase from 'firebase/app';
+import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
@@ -33,7 +34,11 @@ class TwitNew extends LitElement {
     }
 
     firstUpdated() {
-        this.author = firebase.auth().currentUser.uid;
+        document.addEventListener('user-logged', (event) => {
+            this.author = event.detail.user.uid;
+            console.log('current user on twit-new : ');
+            console.log(this.author);
+        });
         document.addEventListener('connection-changed', (event) => {
             this.connection = event.detail;
         });
@@ -44,7 +49,8 @@ class TwitNew extends LitElement {
         //init data for tweet
         let data = {
             content: this.content,
-            date: new Date().getTime()
+            date: new Date().getTime(),
+            author: this.author
         }
         if(this.reply_to != ""){
             data.reply_to = this.reply_to;
@@ -55,7 +61,7 @@ class TwitNew extends LitElement {
             let ref = 'tweets_pic/' + this.author + "/" + this.file[0].name;
             let storageRef = firestorage.ref(ref);
             let content = this.content;
-            let author = this.author;
+            // let author = this.author;
 
             // //upload file
             let task = storageRef.put(this.file[0]);

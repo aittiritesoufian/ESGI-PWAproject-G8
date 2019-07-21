@@ -35,6 +35,10 @@ class TwitElement extends LitElement {
             h1 {
                 display: inline-block;
             }
+            footer > a {
+                text-decoration:none;
+                color:#000;
+            }
         `;
     }
     
@@ -79,7 +83,7 @@ class TwitElement extends LitElement {
                         this.author = doc2.data();
                     }
                 }).catch(function (error) {
-                    console.log("Error getting tweet:", error);
+                    console.log("Error getting author :", error);
                 });
             }
             console.log("not on Element by ID");
@@ -168,11 +172,6 @@ class TwitElement extends LitElement {
         document.dispatchEvent(new CustomEvent('sync'));
     }
 
-    handleComment(e) {
-        // TODO: print a component comment to let user add comment to this tweet
-
-    }
-
     handleDelete(e) {
         // TODO: delete current tweet
         firebase.firestore().collection('tweets').doc(this.tweet.id).delete().then((e) => {
@@ -224,12 +223,12 @@ class TwitElement extends LitElement {
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="repeat"><rect width="24" height="24" opacity="0"/><path d="M17.91 5h-12l1.3-1.29a1 1 0 0 0-1.42-1.42l-3 3a1 1 0 0 0 0 1.42l3 3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42L5.91 7h12a1.56 1.56 0 0 1 1.59 1.53V11a1 1 0 0 0 2 0V8.53A3.56 3.56 0 0 0 17.91 5z"/><path d="M18.21 14.29a1 1 0 0 0-1.42 1.42l1.3 1.29h-12a1.56 1.56 0 0 1-1.59-1.53V13a1 1 0 0 0-2 0v2.47A3.56 3.56 0 0 0 6.09 19h12l-1.3 1.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3-3a1 1 0 0 0 0-1.42z"/></g></g></svg> -->
                             ${!this.tweet.retweets ? "0" : this.tweet.retweets.length}
                         </button>
-                        <button @click="${this.handleComment}" class="comment">
+                        <a href="/tweet/${this.tweet.id}" class="comment">
                         c
                             <fa-icon id="icon-home" class="far fa-sync-alt" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="message-square"><rect width="24" height="24" opacity="0"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/><circle cx="8" cy="11" r="1"/><path d="M19 3H5a3 3 0 0 0-3 3v15a1 1 0 0 0 .51.87A1 1 0 0 0 3 22a1 1 0 0 0 .51-.14L8 19.14a1 1 0 0 1 .55-.14H19a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm1 13a1 1 0 0 1-1 1H8.55a3 3 0 0 0-1.55.43l-3 1.8V6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1z"/></g></g></svg> -->
                             ${!this.tweet.replies ? "0" : this.tweet.replies.length}
-                        </button>
+                        </a>
                         <button @click="${this.handleDelete}" class="delete">
                         d
                             <fa-icon id="icon-home" class="far fa-comment-dots" color=${this.style.color} size=${this.style.size}></fa-icon>
