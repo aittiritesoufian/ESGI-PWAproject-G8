@@ -9,12 +9,14 @@ class TwitPic extends LitElement {
         super();
         this.ref = "";
         this.file = "";
+        this.class = "";
     }
 
     static get properties() {
         return {
             ref: String,
-            file: String
+            file: String,
+            class: String
         };
     }
 
@@ -22,14 +24,11 @@ class TwitPic extends LitElement {
         return css`
             :host {
                 display: block;
+                position:relative;
             }
             * {  box-sizing: border-box }
             img {
                 width:100%;
-                border: 1px solid gray;
-                border-radius: 10px;
-                padding: 16px;
-                border: 1px solid #ededed;
             }
         `;
     }
@@ -44,9 +43,7 @@ class TwitPic extends LitElement {
             });
         }
         return html`
-            <a href="${this.file}">
-                <img src="${this.file}" />
-            </a>
+            <img class="${this.class ? this.class : ''}" src="${this.file}" />
 		`;
     }
 }

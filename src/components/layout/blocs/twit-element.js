@@ -42,6 +42,15 @@ class TwitElement extends LitElement {
                 text-decoration:none;
                 color:#000;
             }
+            .element-img {
+                width:90%;
+                border: 1px solid gray;
+                border-radius: 10px;
+                padding: 16px;
+                border: 1px solid #ededed;
+                position:relative;
+                display: block;
+            }
         `;
     }
     
@@ -216,7 +225,7 @@ class TwitElement extends LitElement {
                         }
                         ${
                             this.tweet.attachment ? html`
-                                <twit-pic ref="${this.tweet.attachment}"></twit-pic>
+                                <twit-pic class="element-img" ref="${this.tweet.attachment}"></twit-pic>
                             ` : ""
                         }
                     </main>

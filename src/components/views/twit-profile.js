@@ -2,8 +2,11 @@ import { LitElement, html, css } from 'lit-element';
 import "../layout/navigation/twit-header.js";
 import "../layout/navigation/twit-footer.js";
 import "../layout/blocs/twit-element.js";
+import "../layout/blocs/twit-pic.js";
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/firestore';
+import 'firebase/storage';
 
 class TwitProfile extends LitElement {
 
@@ -14,6 +17,7 @@ class TwitProfile extends LitElement {
         this.tweets = [];
         this.liked = [];
         this.attachments = [];
+        this.avatar = {};
     }
 
     static get styles(){
@@ -46,7 +50,8 @@ class TwitProfile extends LitElement {
                 margin-left:25px;
                 border-radius:50%;
                 background-color:#fff;
-
+                overflow: hidden;
+                position: relative;
             }
             .icon-zone > img {
                 width:100%;
@@ -70,6 +75,28 @@ class TwitProfile extends LitElement {
             .active {
                 color: #00BFFF;
             }
+            #avatar {
+                display:none;
+            }
+            #icon_camera {
+                position:relative;
+                margin:12.5px;
+                opacity:1;
+            }
+            .current_user {
+                position: absolute;
+                width:50px;
+                height:50px;
+                margin-top: -60px;
+                border-radius:50%;
+                background-color:#efefef;
+                opacity:0.7;
+            }
+            twit-pic {
+                margin-top: inherit;
+                width:50px;
+                height:50px;
+            }
         `;
     }
 
@@ -77,6 +104,7 @@ class TwitProfile extends LitElement {
         return {
             people: Object,
             tab: String,
+            avatar: Object,
             tweets: {
                 type: Array
             },
@@ -87,6 +115,57 @@ class TwitProfile extends LitElement {
                 type: Array
             }
         };
+    }
+
+    handleAvatar(e) {
+        this.shadowRoot.querySelector("#avatar").click();
+    }
+
+    submitAvatar(e){
+        console.log("submitted");
+        console.log(this.avatar);
+        if (this.avatar.length > 0) {
+            const firestorage = firebase.storage();
+            let ref = 'profiles_pic/' + this.people.id + "/" + this.avatar[0].name;
+            let storageRef = firestorage.ref(ref);
+            //upload file
+            let task = storageRef.put(this.avatar[0]);
+            let user_id = this.people.id;
+            task.on('state_changed',
+                function progress(snapshot) {
+                    var percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    // this.uploader = percentage;
+                },
+
+                function error(err) {
+                    switch (error.code) {
+                        case 'storage/unauthorized':
+                            // User doesn't have permission to access the object
+                            console.log("Error : Unauthorized");
+                            break;
+
+                        case 'storage/canceled':
+                            // User canceled the upload
+                            console.log("Error : Canceled");
+                            break;
+                        case 'storage/unknown':
+                            // Unknown error occurred, inspect error.serverResponse
+                            console.log("Error : Unknown", err);
+                            break;
+                    }
+                },
+
+                function complete() {
+                    console.log("upload complete");
+                    let img_ref = ref;
+                    const database = firebase.firestore();
+                    database.collection('users').doc(user_id).update({
+                        avatar: img_ref
+                    });
+                    console.log("User avatar updated");
+                }
+            );
+        }
     }
 
     firstUpdated(){
@@ -178,7 +257,22 @@ class TwitProfile extends LitElement {
                     <section class="profil">
                         <header>
                             <section class="banner">
-                                <div class="icon-zone"><img src="${this.people.avatar ? this.people.avatar : "/1f680.png"}"/></div>
+                                <div class="icon-zone">
+                                    
+                                    ${this.people.avatar ? html`
+                                        <twit-pic ref="${this.people.avatar}"></twit-pic>
+                                    `
+                                    : html`<img src="/1f680.png"/>`}
+                                    
+                                    ${
+                                        !this.location.params.slug ? html`
+                                            <span @click="${this.handleAvatar}" class="current_user">
+                                                <fa-icon id="icon_camera" class="fas fa-camera" color="#ccc" size="25px"></fa-icon>
+                                                <input type="file" id="avatar" @input="${e => this.avatar = e.target.files}" @change="${this.submitAvatar}" />
+                                            </span>
+                                        ` : ""
+                                    }
+                                </div>
                             </section>
                             <section class="profil-infos">
                                 <h1>${this.people.name}</h1>
