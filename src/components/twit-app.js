@@ -114,7 +114,10 @@ class TwitApp extends LitElement {
             },
             {
                 path: '/profil',
-                component: 'twit-profile'
+                children: [
+                    { path: '/', component: 'twit-profile' },
+                    { path: '/:slug', component: 'twit-profile' }
+                ]
             },
             {
                 path: '/post',
