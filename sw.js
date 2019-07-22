@@ -14,29 +14,6 @@
 importScripts("workbox-v4.2.0/workbox-sw.js");
 workbox.setConfig({modulePathPrefix: "workbox-v4.2.0"});
 
-self.addEventListener('fetch', (event) => {
-  const destination = event.request.destination;
-  switch (destination) {
-    case 'style':
-    case 'script':
-    case 'document':
-    case 'image': {
-      event.respondWith("Network Falling Back to Cache");
-      return;
-    }
-    case 'font': {
-      event.respondWith("Cache Only");
-      return;
-    }
-    // All `XMLHttpRequest` or `fetch()` calls where
-    // `Request.destination` is the empty string default value
-    default: {
-      event.respondWith(/* "Network Only" strategy */);
-      return;
-    }
-  }
-});
-
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -285,14 +262,14 @@ self.__precacheManifest = [
     "url": "/node_modules/lit-html/lib/template.js",
     "revision": "aa4ec6a7762d526e15f7c34b4e06c9c4"
   },
-  // {
-  //   "url": "/node_modules/lit-html/lib/unsafe-html.js",
-  //   "revision": "68d76f033adbaf4fea06ad13cf0980ce"
-  // },
-  // {
-  //   "url": "/node_modules/lit-html/lib/until.js",
-  //   "revision": "5c149fcee4354ebda36af2e9bb63a79a"
-  // },
+  {
+    "url": "/node_modules/firebase/storage/dist/index.esm.js ",
+    "revision": "68d76f033adbaf4fea06ad13cf0980ce"
+  },
+  {
+    "url": "/node_modules/firebase/auth/dist/index.esm.js",
+    "revision": "5c149fcee4354ebda36af2e9bb63a79a"
+  },
   {
     "url": "/node_modules/lit-html/lit-html.js",
     "revision": "b0f1b842794a5026a27829356f2a26ce"
