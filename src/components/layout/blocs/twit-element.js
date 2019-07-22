@@ -147,7 +147,7 @@ class TwitElement extends LitElement {
             console.log('error on adding tweet reference to users\'s likes');
             console.log(error);
         });
-        document.dispatchEvent(new CustomEvent('sync'));
+        // document.dispatchEvent(new CustomEvent('sync'));
     }
 
     dislike(){
@@ -155,7 +155,7 @@ class TwitElement extends LitElement {
             likes: firebase.firestore.FieldValue.arrayRemove(this.user.uid)
         });
         console.log("like removed on tweet " + this.tweet.id + " for user " + this.user.uid);
-        document.dispatchEvent(new CustomEvent('sync'));
+        // document.dispatchEvent(new CustomEvent('sync'));
     }
 
     handleLike(e) {
@@ -171,24 +171,15 @@ class TwitElement extends LitElement {
     }
 
     async retweet(){
-        const database = await openDB('twitbook', 1, {
-            upgrade(db) {
-                db.createObjectStore('tweets');
-            }
-        });
         //publish a new tweet with tweetReference in place of content
         let data = {
             tweetReference: this.tweet.id,
-            date: new Date().getTime()
+            date: new Date().getTime(),
+            author: this.user.uid
         }
-        data.status = 1;
-        data.id = "local" + Math.floor(Math.random() * 1000);
-        try {
-            await database.put('tweets', data, data.id);
-            console.log("Retweet sent");
-        } catch (e) {
-            console.log("error on insert on IDB : " + e);
-        }
+        const database = firebase.firestore();
+        database.collection('tweets').add(data);
+        console.log("Retweet sent");
         //add reference to current user who retweeted
         firebase.firestore().collection('tweets').doc(this.tweet.id).update({
             retweets: firebase.firestore.FieldValue.arrayUnion(this.user.uid)
@@ -230,7 +221,7 @@ class TwitElement extends LitElement {
             console.log("tweet deletion succeed");
         });
         console.log("Tweet " + this.tweet.id + " deleted");
-        document.dispatchEvent(new CustomEvent('sync'));
+        // document.dispatchEvent(new CustomEvent('sync'));
     }
 
 	render(){

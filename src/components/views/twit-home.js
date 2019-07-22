@@ -95,8 +95,9 @@ class TwitHome extends LitElement {
     }
 
     addTweet(e) {
+        this.tweets = {};
         this.tweets = e.detail;
-        console.log("addTweet");
+        console.log("Tweet list updated");
         setTimeout(() => {
             // window.scrollTo(0, document.body.scrollHeight);
         }, 0);
