@@ -7,6 +7,13 @@ class TwitHeader extends LitElement {
 
 	constructor(){
         super();
+        this.user = {};
+    }
+
+    static get properties(){
+        return {
+            user:Object
+        }
     }
 
     static get styles(){
@@ -35,7 +42,9 @@ class TwitHeader extends LitElement {
     }
 
     firstUpdated(){
-        
+        if (firebase.auth().currentUser){
+            this.user = firebase.auth().currentUser;
+        }
     }
 
     handleLogout(e) {
@@ -56,9 +65,9 @@ class TwitHeader extends LitElement {
 	render(){
 		return html`
 			<header slot="header">
-                <fa-icon id="icon-logout" @click="${this.handleLogout}" class="fas fa-power-off" color="#00BFFF" size="30px"></fa-icon>
+                ${this.user.uid ? html`<fa-icon id="icon-logout" @click="${this.handleLogout}" class="fas fa-power-off" color="#00BFFF" size="30px"></fa-icon>` : html`<span></span>`}
                 <img src="/src/assets/images/1f680.png" alt="">
-                <fa-icon id="icon-search" @click="${this.handleSearch}" class="fas fa-search" color="#00BFFF" size="30px"></fa-icon>
+                ${this.user.uid ? html`<fa-icon id="icon-search" @click="${this.handleSearch}" class="fas fa-search" color="#00BFFF" size="30px"></fa-icon>` : html`<span></span>`}
             </header>
 		`;
 	}
