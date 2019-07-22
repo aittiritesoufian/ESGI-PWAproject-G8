@@ -178,7 +178,6 @@ class TwitHome extends LitElement {
                 ` : html`
                 ${
                     this.user.uid ? html`
-                    logged !!!!
                         <twit-store .currentUser="${this.user}" @listTweets="${this.addTweet}">
                         </twit-store>
                     ` : html``

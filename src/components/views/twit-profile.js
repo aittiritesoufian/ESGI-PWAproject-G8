@@ -209,7 +209,6 @@ class TwitProfile extends LitElement {
     }
 
     firstUpdated(){
-        console.log("heer !!!!");
         document.addEventListener('user-logged', (event) => {
             this.currentUser = event.detail.user;
             // get current user informations
@@ -222,40 +221,41 @@ class TwitProfile extends LitElement {
         });
         if (this.location.params.slug){
             // get current user informations
-            firebase.firestore().collection('users').doc(this.location.params.slug).get().then((doc) => {
-                this.people = doc.data();
-                this.people.id = doc.id;
+            firebase.firestore().collection('users').where('slug', "==", this.location.params.slug).get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    this.people = doc.data();
+                    this.people.id = doc.id;
+                    //get current user tweets
+                    firebase.firestore().collection('tweets').where("author", "==", this.people.id).get().then((querySnapshot) => {
+                        querySnapshot.forEach((doc) => {
+                            if (doc.exists) {
+                                let tweet = doc.data();
+                                tweet.id = doc.id ? doc.id : "";
+                                this.tweets = [...this.tweets, tweet];
+                            }
+                        });
+                    }).catch((error) => {
+                        console.log('No tweets found!');
+                        console.log(error);
+                    });
+                    //get current user tweets with attachments
+                    firebase.firestore().collection('tweets').where("author", "==", this.people.id).where("attachment", ">=", "tweets_pic").orderBy("attachment", "asc").get().then((querySnapshot) => {
+                        querySnapshot.forEach((doc) => {
+                            if (doc.exists) {
+                                let tweet = doc.data();
+                                tweet.id = doc.id ? doc.id : "";
+                                this.attachments = [...this.attachments, tweet];
+                            }
+                        });
+                    }).catch((error) => {
+                        console.log('No attachments found!');
+                        console.log(error);
+                    });
+                });
             }).catch((error) => {
                 console.log('No user profil information found!');
             });
-            //get current user tweets
-            firebase.firestore().collection('tweets').where("author", "==", this.location.params.slug).get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    if (doc.exists) {
-                        let tweet = doc.data();
-                        tweet.id = doc.id ? doc.id : "";
-                        this.tweets = [...this.tweets, tweet];
-                    }
-                });
-            }).catch((error) => {
-                console.log('No tweets found!');
-                console.log(error);
-            });
-            //get current user tweets with attachments
-            firebase.firestore().collection('tweets').where("author", "==", this.location.params.slug).where("attachment", ">=", "tweets_pic").orderBy("attachment", "asc").get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    if (doc.exists) {
-                        let tweet = doc.data();
-                        tweet.id = doc.id ? doc.id : "";
-                        this.attachments = [...this.attachments, tweet];
-                    }
-                });
-            }).catch((error) => {
-                console.log('No attachments found!');
-                console.log(error);
-            });
-            //get current user liked tweets_id
-
+            
         } else {
             //current user
             document.addEventListener('user-logged', (event) => {
