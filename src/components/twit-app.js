@@ -34,79 +34,10 @@ class TwitApp extends LitElement {
             }
         `;
     }
-
-    async twitSync() {
-        console.log("sync start");
-        if (this.connection === true) {
-            console.log('sync running');
-            // const localbase = await openDB('twitbook', 1, {
-            //     upgrade(db) {
-            //         db.createObjectStore('tweets');
-            //     }
-            // });
-
-            // const keys = await localbase.getAllKeys('tweets');
-            // console.log(keys);
-            // let tweets = [];
-            // for (var i = keys.length - 1; i >= 0; i--) {
-            //     tweets.push(await localbase.get('tweets', keys[i]));
-            // }
-            // console.log(tweets);
-
-            // for (var j = tweets.length - 1; j >= 0; j--) {
-            //     // console.log('loop starting');
-            //     // console.log(tweets[j]);
-            //     let idTweet = tweets[j]['id'];
-            //     //delete
-            //     if (tweets[j]['status'] == -2) {
-            //         //delete on remote
-
-            //     }
-            //     //add on remote
-            //     else if (tweets[j]['status'] == 1) {
-            //         //delete unnecessary field
-            //         delete tweets[j]['status'];
-            //         delete tweets[j]['id'];
-            //         tweets[j]['author'] = this.user.uid;
-            //         const database = firebase.firestore();
-            //         //send to remote
-            //         database.collection('tweets').add(tweets[j]);
-            //         //remove local temporary version
-            //         await localbase.delete("tweets", idTweet);
-
-            //     } else if (tweets[j]['status'] == 2) {
-            //         //sync from remote
-            //         firebase.firestore().collection("tweets").doc(idTweet).get().then(async doc => {
-            //             if (doc.exists) {
-            //                 let tweet = doc.data();
-            //                 if (tweet.author != undefined && typeof (tweet.author) != "object"){
-            //                     let author = await firebase.firestore().collection("users").doc(doc.data().author).get().then(doc2 => {
-            //                         if (doc2.exists) {
-            //                             return doc2.data();
-            //                         }
-            //                     }).catch(function (error) {
-            //                         console.log("Error getting Author:", error);
-            //                     });
-            //                     tweet.author = await author;
-            //                     tweet.author.id = doc.data().author;
-            //                 }
-            //                 tweet.status = 0;
-            //                 tweet.id = idTweet;
-            //                 await localbase.put('tweets', tweet, tweet.id);
-            //             } else {
-            //                 // doc.data() will be undefined in this case
-            //                 console.log("No such document!");
-            //             }
-            //         }).catch(function (error) {
-            //             console.log("Error getting Tweet:", error);
-            //         });
-            //     }
-            // }
-        }
-    }
     
     initRouter() {
-        const router = new Router(this.shadowRoot);
+        const outlet = document.getElementById('outlet');
+        const router = new Router(outlet);
         router.setRoutes([
             {
                 path: '/',
@@ -137,6 +68,7 @@ class TwitApp extends LitElement {
     }
 
     firstUpdated() {
+        this.initRouter();
         document.addEventListener('connection-changed', ({ detail }) => {
             this.connection = detail;
         });
@@ -174,9 +106,6 @@ class TwitApp extends LitElement {
     }
 
     render() {
-        window.addEventListener('load', () => {
-            this.initRouter();
-        });
         return html`
         `;
     }
