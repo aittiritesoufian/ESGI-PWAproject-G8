@@ -14,6 +14,29 @@
 importScripts("workbox-v4.2.0/workbox-sw.js");
 workbox.setConfig({modulePathPrefix: "workbox-v4.2.0"});
 
+self.addEventListener('fetch', (event) => {
+  const destination = event.request.destination;
+  switch (destination) {
+    case 'style':
+    case 'script':
+    case 'document':
+    case 'image': {
+      event.respondWith("Network Falling Back to Cache");
+      return;
+    }
+    case 'font': {
+      event.respondWith("Cache Only");
+      return;
+    }
+    // All `XMLHttpRequest` or `fetch()` calls where
+    // `Request.destination` is the empty string default value
+    default: {
+      event.respondWith(/* "Network Only" strategy */);
+      return;
+    }
+  }
+});
+
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -281,4 +304,4 @@ self.__precacheManifest = [
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerRoute(/\.(?:png|gif|jpg|jpeg|svg)$/, new workbox.strategies.CacheFirst(), 'GET');
+workbox.routing.registerRoute(/\.(?:png|gif|jpg|jpeg|svg)$/, new workbox.strategies.CacheFirst({ "cacheName": "images", plugins: [] }), 'GET');

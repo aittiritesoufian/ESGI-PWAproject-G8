@@ -40,8 +40,8 @@ class TwitStore extends LitElement {
         //get tweets
         this.data = [];
         this.currentUser = await firebase.auth().currentUser;
-        console.log("current user : ");
-        console.log(this.currentUser);
+        // console.log("current user : ");
+        // console.log(this.currentUser);
         firebase.firestore().collection("feed").doc(this.currentUser.uid).collection('tweets').orderBy('date', 'desc').onSnapshot({ includeMetadataChanges: true },ref => {
             ref.docChanges().forEach(async change => {
                 const { newIndex, oldIndex, doc, type } = change;

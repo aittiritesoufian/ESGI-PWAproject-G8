@@ -208,10 +208,10 @@ class TwitProfile extends LitElement {
         }
     }
 
-    firstUpdated(){
+    async firstUpdated(){
         if (firebase.auth().currentUser) {
-            this.currentUser = firebase.auth().currentUser;
-            firebase.firestore().collection('users').doc(this.currentUser.uid).get().then((doc) => {
+            let user = firebase.auth().currentUser;
+            await firebase.firestore().collection('users').doc(user.uid).get().then((doc) => {
                 this.currentUser = doc.data();
                 this.currentUser.uid = doc.id;
             }).catch((error) => {
@@ -219,9 +219,9 @@ class TwitProfile extends LitElement {
             });
         }
         document.addEventListener('user-logged', (event) => {
-            this.currentUser = event.detail.user;
+            let user = event.detail.user;
             // get current user informations
-            firebase.firestore().collection('users').doc(this.currentUser.uid).get().then((doc) => {
+            firebase.firestore().collection('users').doc(user.uid).get().then((doc) => {
                 this.currentUser = doc.data();
                 this.currentUser.uid = doc.id;
             }).catch((error) => {
@@ -265,7 +265,7 @@ class TwitProfile extends LitElement {
                 console.log('No user profil information found!');
             });
             
-        } else if (this.currentUser.uid) {
+        } else if(this.currentUser.uid) {
             //current user
             this.people = this.currentUser;
             this.people.id = this.currentUser.uid;
