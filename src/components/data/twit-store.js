@@ -42,7 +42,7 @@ class TwitStore extends LitElement {
         let user = firebase.auth().currentUser;
         console.log("current user : ");
         console.log(user);
-        firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot({ includeMetadataChanges: true },ref => {
+        firebase.firestore().collection(this.collection).orderBy('date', 'desc').onSnapshot({ includeMetadataChanges: true },ref => {
             ref.docChanges().forEach(async change => {
                 const { newIndex, oldIndex, doc, type } = change;
                 if (type == "added") {

@@ -97,6 +97,7 @@ class TwitNew extends LitElement {
                     const database = firebase.firestore();
                     database.collection('tweets').add(data);
                     console.log("Tweet with file sent");
+                    this.dispatchEvent(new CustomEvent('saved'));
                     window.location.replace('/');
                 }
             );
@@ -117,6 +118,7 @@ class TwitNew extends LitElement {
             const database = firebase.firestore();
             database.collection('tweets').add(data);
             console.log("Tweet without file sent");
+            this.dispatchEvent(new CustomEvent('saved'));
             window.location.replace('/');
         }
         // document.dispatchEvent(new CustomEvent('sync'));

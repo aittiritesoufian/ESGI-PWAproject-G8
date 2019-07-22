@@ -41,7 +41,12 @@ class TwitTweet extends LitElement {
     render() {
         return html`
             <twit-header></twit-header>
-            <twit-element .tweet="${this.tweet}"></twit-element>
+            ${
+                this.tweet.id ? html`
+                    <twit-element .tweet="${this.tweet}"></twit-element>
+                `
+                : html``
+            }
             ${
                 this.tweet.id ? html`
                     <twit-comments .tweet_id="${this.tweet.id}"></twit-comments>

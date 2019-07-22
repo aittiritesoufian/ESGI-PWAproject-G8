@@ -188,7 +188,7 @@ class TwitElement extends LitElement {
         document.dispatchEvent(new CustomEvent('sync'));
     }
 
-    async unretweet() {
+    unretweet() {
         //delete tweet generated for retweet
         firebase.firestore().collection('tweets').doc(this.tweet.id).update({
             retweets: firebase.firestore.FieldValue.arrayRemove(this.user.uid)
@@ -215,7 +215,19 @@ class TwitElement extends LitElement {
         document.dispatchEvent(new CustomEvent('sync'));
     }
 
+    decrementComments(tweet_id) {
+        firebase.firestore().collection('tweets').doc(tweet_id).update({
+            replies: firebase.firestore.FieldValue.increment(-1)
+        }).catch((error) => {
+            console.log('Error on decrement replies number');
+            console.log(error);
+        })
+    }
+
     handleDelete(e) {
+        if(this.tweet.reply_to){
+            this.decrementComments(this.tweet.reply_to);
+        }
         // TODO: delete current tweet
         firebase.firestore().collection('tweets').doc(this.tweet.id).delete().then((e) => {
             console.log("tweet deletion succeed");
@@ -276,7 +288,7 @@ class TwitElement extends LitElement {
                         <a href="/tweet/${this.tweet.id}" class="comment">
                             <fa-icon id="icon-home" class="far fa-comment-dots" color=${this.style.color} size=${this.style.size}></fa-icon>
                             <!-- <svg height="15px" width="15px" fill="#2d2d2d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g data-name="message-square"><rect width="24" height="24" opacity="0"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/><circle cx="8" cy="11" r="1"/><path d="M19 3H5a3 3 0 0 0-3 3v15a1 1 0 0 0 .51.87A1 1 0 0 0 3 22a1 1 0 0 0 .51-.14L8 19.14a1 1 0 0 1 .55-.14H19a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm1 13a1 1 0 0 1-1 1H8.55a3 3 0 0 0-1.55.43l-3 1.8V6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1z"/></g></g></svg> -->
-                            ${!this.tweet.replies ? "0" : this.tweet.replies.length}
+                            ${!this.tweet.replies ? "0" : this.tweet.replies}
                         </a>
                         <button @click="${this.handleDelete}" class="delete">
                             <fa-icon id="icon-home" class="far fa-trash-alt" color=${this.style.color} size=${this.style.size}></fa-icon>

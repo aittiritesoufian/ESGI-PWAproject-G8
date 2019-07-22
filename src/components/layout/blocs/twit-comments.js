@@ -12,6 +12,7 @@ class TwitComments extends LitElement {
 	constructor(){
         super();
         this.tweet_id = "";
+        this.author = {};
         this.tweets = [];
         this.tweet = {};
         this.style = {
@@ -68,6 +69,7 @@ class TwitComments extends LitElement {
             tweet_id: String,
             style: Object,
             tweet: Object,
+            author: Object,
             tweets: {
                 type: Array
             },
@@ -76,6 +78,7 @@ class TwitComments extends LitElement {
     }
 
     firstUpdated(){
+        this.author = firebase.auth().currentUser.uid;
         if(this.tweet_id){
             firebase.firestore().collection('tweets').where('reply_to', '==', this.tweet_id).get().then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
@@ -103,13 +106,22 @@ class TwitComments extends LitElement {
         this.modal = false;
     }
 
+    incrementComments(){
+        firebase.firestore().collection('tweets').doc(this.tweet_id).update({
+            replies: firebase.firestore.FieldValue.increment(1)
+        }).catch((error) => {
+            console.log('Error on increment replies number');
+            console.log(error);
+        })
+    }
+
 	render(){
         return html`
         <div class="replies">
             ${this.modal ? html`
                 <div class="modal">
                     <fa-icon id="icon-home" class="far fa-times-circle close" color="#4E4E4E" size="1.5em" @click="${this.closeModal}">X</fa-icon>
-                    <twit-new .reply_to="${this.tweet_id}"></twit-new>
+                    <twit-new .author="${this.author}" .reply_to="${this.tweet_id}" @saved="${this.incrementComments}"></twit-new>
                 </div>
             ` : html`
                 <button @click="${this.showModal}">+ Commenter</button>
