@@ -158,6 +158,9 @@ class TwitApp extends LitElement {
             firebase.auth().onAuthStateChanged(user => {
                 if (!user) {
                     localStorage.setItem('logged', false);
+                    if (window.location.pathname != "/"){
+                        window.location.replace('/');
+                    }
                     return console.log('logged out');
                 };
                 localStorage.setItem('logged', true);
