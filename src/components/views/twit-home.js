@@ -6,6 +6,8 @@ import "../layout/blocs/twit-new.js";
 import "../data/twit-store.js";
 import "../data/twit-auth.js";
 import "../data/twit-login.js";
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 class TwitHome extends LitElement {
     constructor() {
@@ -73,6 +75,9 @@ class TwitHome extends LitElement {
     firstUpdated() {
         this.unresolved = false;
         this.logged = localStorage.getItem('logged') == "true" ? true : false;
+        document.addEventListener('user-logged', (event) => {
+            this.user = event.detail.user;
+        });
     }
 
     urlBase64ToUint8Array(base64String) {
@@ -171,14 +176,19 @@ class TwitHome extends LitElement {
                 <twit-login @user-logged="${this.handleLogin}">
                 </twit-login>
                 ` : html`
-                <twit-store collection="tweets" @listTweets="${this.addTweet}">
-                </twit-store>
+                ${
+                    this.user.uid ? html`
+                    logged !!!!
+                        <twit-store .currentUser="${this.user}" @listTweets="${this.addTweet}">
+                        </twit-store>
+                    ` : html``
+                }
                 <h1>Hi, ${this.user.email}</h1>
                 <button @click="${this.subscribe}">Subscribe</button>
                 <h1>Tweets: </h1>
                 <ul>
                     ${this.tweets.map(tweet => html`
-                        <twit-element .tweet="${tweet}"></twit-element>
+                    <twit-element .id="${tweet.id}"></twit-element>
                     `)}
                 </ul>
                 `

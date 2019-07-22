@@ -34,11 +34,12 @@ class TwitNew extends LitElement {
     }
 
     firstUpdated() {
-        document.addEventListener('user-logged', (event) => {
-            this.author = event.detail.user.uid;
-            console.log('current user on twit-new : ');
-            console.log(this.author);
-        });
+        this.author = firebase.auth().currentUser.uid;
+        // document.addEventListener('user-logged', (event) => {
+        //     this.author = event.detail.user.uid;
+        //     console.log('current user on twit-new : ');
+        //     console.log(this.author);
+        // });
         document.addEventListener('connection-changed', (event) => {
             this.connection = event.detail;
         });
@@ -49,8 +50,7 @@ class TwitNew extends LitElement {
         //init data for tweet
         let data = {
             content: this.content,
-            date: new Date().getTime(),
-            author: this.author
+            date: new Date().getTime()
         }
         if(this.reply_to != ""){
             data.reply_to = this.reply_to;
@@ -91,38 +91,58 @@ class TwitNew extends LitElement {
                     }
                 },
 
-                function complete() {
+                async function complete() {
                     console.log("upload complete");
                     data.attachment = ref;
+                    data.author = this.author;
                     const database = firebase.firestore();
-                    database.collection('tweets').add(data);
+                    await database.collection('tweets').add(data)
+                        .then(async (docRef) => {
+                            console.log("Tweet written with ID: ", docRef.id);
+                            await this.addTweetToFeed(docRef.id, data.date);
+                        })
+                        .catch((error) => {
+                            console.error("Error adding tweet: ", error);
+                        });
                     console.log("Tweet with file sent");
                     this.dispatchEvent(new CustomEvent('saved'));
                     window.location.replace('/');
                 }
             );
         } else {
-            // const database = await openDB('twitbook', 1, {
-            //     upgrade(db) {
-            //         db.createObjectStore('tweets');
-            //     }
-            // });
-            // data.status = 1;
-            // data.id = "local" + Math.floor(Math.random() * 1000);
-            // try{
-            //     await database.put('tweets', data, data.id);
-            //     console.log("Tweet only sent");
-            // } catch(e) {
-            //     console.log("error on insert on IDB : "+e);
-            // }
             const database = firebase.firestore();
-            database.collection('tweets').add(data);
+            data.author = this.author;
+            await database.collection('tweets').add(data)
+                .then(async (docRef) => {
+                    console.log("Tweet written with ID: ", docRef.id);
+                    await this.addTweetToFeed(docRef.id, data.date);
+                })
+                .catch((error) => {
+                    console.error("Error adding tweet: ", error);
+                });;
             console.log("Tweet without file sent");
             this.dispatchEvent(new CustomEvent('saved'));
             window.location.replace('/');
         }
-        // document.dispatchEvent(new CustomEvent('sync'));
-        // sync();
+    }
+
+    async addTweetToFeed(tweet_id, date){
+        //add to followers feed
+        // 1. get current user
+        console.log('Adding tweet for followers feed');
+        await firebase.firestore().collection('users').doc(this.author).get().then((doc) => {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                // 2. iter on followers
+                doc.data().subscribers.forEach(follower => {
+                    //for each follower, set in it doc in collection "feed", in collection tweets a doc with the current tweet reference and him date
+                    firebase.firestore().collection('feed').doc(follower).collection('tweets').doc(tweet_id).set({
+                        date: date
+                    })
+                });
+                console.log('Tweet added to followers!');
+            }
+        });
     }
 
     static get styles(){

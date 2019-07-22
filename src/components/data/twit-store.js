@@ -14,20 +14,20 @@ class TwitStore extends LitElement {
         this.collection = '';
         this.connection = false;
         this.previousConnection = false;
-        this.author = {};
+        this.currentUser = {};
     }
 
     static get properties(){
         return {
             tweet: Object,
             tweet_id: String,
-            author: Object,
             data: {
                 type: Array
             },
             collection: String,
             connection: Boolean,
-            previousConnection: Boolean
+            previousConnection: Boolean,
+            currentUser: Object
         };
     }
 
@@ -39,29 +39,16 @@ class TwitStore extends LitElement {
         });
         //get tweets
         this.data = [];
-        let user = firebase.auth().currentUser;
+        this.currentUser = await firebase.auth().currentUser;
         console.log("current user : ");
-        console.log(user);
-        firebase.firestore().collection(this.collection).orderBy('date', 'desc').onSnapshot({ includeMetadataChanges: true },ref => {
+        console.log(this.currentUser);
+        firebase.firestore().collection("feed").doc(this.currentUser.uid).collection('tweets').orderBy('date', 'desc').onSnapshot({ includeMetadataChanges: true },ref => {
             ref.docChanges().forEach(async change => {
                 const { newIndex, oldIndex, doc, type } = change;
                 if (type == "added") {
                     console.log("update with added");
                     this.tweet = doc.data();
                     this.tweet.id = doc.id ? doc.id : "";
-                    this.tweet.status = 0;
-                    if (this.tweet.author != undefined && typeof (this.tweet.author) != "object" && this.tweet.author != "") {
-                        firebase.firestore().collection("users").doc(this.tweet.author).get().then(async doc2 => {
-                            if (doc2.exists) {
-                                this.author = doc2.data();
-                                // await database.put("users", this.author, doc2.id);
-                            }
-                        }).catch(function (error) {
-                            console.log("Error getting Author:", error);
-                        });
-                    } else {
-                        console.log('no author for tweet number : ' + this.tweet.id);
-                    }
                     this.data = [...this.data, this.tweet];
                     this.dispatchEvent(new CustomEvent('listTweets', { detail: this.data }));
                 } else if (type == "modified") {
