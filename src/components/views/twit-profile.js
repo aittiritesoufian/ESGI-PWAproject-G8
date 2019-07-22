@@ -209,6 +209,15 @@ class TwitProfile extends LitElement {
     }
 
     firstUpdated(){
+        if (firebase.auth().currentUser) {
+            this.currentUser = firebase.auth().currentUser;
+            firebase.firestore().collection('users').doc(this.currentUser.uid).get().then((doc) => {
+                this.currentUser = doc.data();
+                this.currentUser.uid = doc.id;
+            }).catch((error) => {
+                console.log('Current user hasn\'t profile information');
+            });
+        }
         document.addEventListener('user-logged', (event) => {
             this.currentUser = event.detail.user;
             // get current user informations
@@ -256,46 +265,35 @@ class TwitProfile extends LitElement {
                 console.log('No user profil information found!');
             });
             
-        } else {
+        } else if (this.currentUser.uid) {
             //current user
-            document.addEventListener('user-logged', (event) => {
-                let user = event.detail.user;
-                this.currentUser = event.detail.user;
-                // get current user informations
-                firebase.firestore().collection('users').doc(user.uid).get().then((doc) => {
-                    this.people = doc.data();
-                    this.people.id = doc.id;
-                }).catch((error) => {
-                    console.log('No user profil information found!');
+            this.people = this.currentUser;
+            this.people.id = this.currentUser.uid;
+            //get current user tweets
+            firebase.firestore().collection('tweets').where("author", "==", this.currentUser.uid).get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    if (doc.exists) {
+                        let tweet = doc.data();
+                        tweet.id = doc.id ? doc.id : "";
+                        this.tweets = [...this.tweets, tweet];
+                    }
                 });
-                //get current user tweets
-                firebase.firestore().collection('tweets').where("author", "==", user.uid).get().then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        if (doc.exists) {
-                            let tweet = doc.data();
-                            tweet.id = doc.id ? doc.id : "";
-                            this.tweets = [...this.tweets, tweet];
-                        }
-                    });
-                }).catch((error) => {
-                    console.log('No tweets found!');
-                    console.log(error);
+            }).catch((error) => {
+                console.log('No tweets found!');
+                console.log(error);
+            });
+            //get current user tweets with attachments
+            firebase.firestore().collection('tweets').where("author", "==", this.currentUser.uid).where("attachment", ">=", "tweets_pic").orderBy("attachment", "asc").get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    if (doc.exists) {
+                        let tweet = doc.data();
+                        tweet.id = doc.id ? doc.id : "";
+                        this.attachments = [...this.attachments, tweet];
+                    }
                 });
-                //get current user tweets with attachments
-                firebase.firestore().collection('tweets').where("author", "==", user.uid).where("attachment", ">=", "tweets_pic").orderBy("attachment", "asc").get().then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        if (doc.exists) {
-                            let tweet = doc.data();
-                            tweet.id = doc.id ? doc.id : "";
-                            this.attachments = [...this.attachments, tweet];
-                        }
-                    });
-                }).catch((error) => {
-                    console.log('No attachments found!');
-                    console.log(error);
-                });
-                //get current user liked tweets_id
-
+            }).catch((error) => {
+                console.log('No attachments found!');
+                console.log(error);
             });
         }
     }
@@ -311,7 +309,7 @@ class TwitProfile extends LitElement {
                                 <div class="icon-zone">
                                     
                                     ${this.people.avatar ? html`
-                                        <twit-pic ref="${this.people.avatar}"></twit-pic>
+                                        <twit-pic .ref="${this.people.avatar}"></twit-pic>
                                     `
                                     : html`<img src="/1f680.png"/>`}
                                     
@@ -334,12 +332,13 @@ class TwitProfile extends LitElement {
                         <main>
                             <section class="subscription">
                             ${
-                                (this.currentUser.subscriptions && this.currentUser.subscriptions.indexOf(this.people.id) >= 0) ? html`
-                                    <button @click="${this.handleUnFollow}" class="unfollow">Ne plus suivre</button>
-                                `: html`
-                                    <button @click="${this.handleFollow}" class="follow">Suivre</button>
-                                    
-                                `
+                                this.location.params.slug ?
+                                    (this.currentUser.subscriptions && this.currentUser.subscriptions.indexOf(this.people.id) >= 0) ? html`
+                                        <button @click="${this.handleUnFollow}" class="unfollow">Ne plus suivre</button>
+                                    `: html`
+                                        <button @click="${this.handleFollow}" class="follow">Suivre</button>
+                                        
+                                    ` : ""
                             }
                             </section>
                             <section class="tabs">

@@ -73,11 +73,15 @@ class TwitHome extends LitElement {
     }
 
     firstUpdated() {
+        if (firebase.auth().currentUser){
+            this.user = firebase.auth().currentUser;
+        }
         this.unresolved = false;
         this.logged = localStorage.getItem('logged') == "true" ? true : false;
         document.addEventListener('user-logged', (event) => {
             this.user = event.detail.user;
         });
+        
     }
 
     urlBase64ToUint8Array(base64String) {
