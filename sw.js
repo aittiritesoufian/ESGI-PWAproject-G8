@@ -281,6 +281,26 @@ self.__precacheManifest = [
   {
     "url": "/node_modules/lit-html/polyfills/template_polyfill.js",
     "revision": "0f0860f25b55c688dd6f1bd5685a824c"
+  },
+  {
+    "url": "/node_modules/tslib/tslib.es6.js",
+    "revision": "0f0860f25b55c688dd6f1bd5685a824c"
+  },
+  {
+    "url": "/node_modules/@firebase/auth/dist/auth.esm.js",
+    "revision": "0f0860f25b55c688dd6f1bd5685a824c"
+  },
+  {
+    "url": "/node_modules/@firebase/storage/dist/index.esm.js",
+    "revision": "0f0860f25b55c688dd6f1bd5685a824c"
+  },
+  {
+    "url": "/node_modules/fa-icons/fa-icon.js",
+    "revision": "0f0860f25b55c688dd6f1bd5685a824c"
+  },
+  {
+    "url": "/node_modules/@firebase/webchannel-wrapper/dist/index.esm.js",
+    "revision": "0f0860f25b55c688dd6f1bd5685a824c"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
