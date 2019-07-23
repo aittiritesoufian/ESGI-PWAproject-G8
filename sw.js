@@ -234,10 +234,14 @@ self.__precacheManifest = [
     "url": "/node_modules/lit-html/lib/render.js",
     "revision": "e22a39942d0d752076163c996cf8fc56"
   },
-  // {
-  //   "url": "/node_modules/lit-html/lib/repeat.js",
-  //   "revision": "8472ee5fdd935aa72259321a05f9471f"
-  // },
+  {
+    "url": "/node_modules/@firebase/logger/dist/index.esm.js",
+    "revision": "8472ee5fdd935aa72259321a05f9471f"
+  },
+  {
+    "url": '/node_modules/@firebase/firestore/dist/index.esm.js',
+    "revision": "8472ee5fdd935aa72259321a05f9471f"
+  },
   {
     "url": "/node_modules/lit-html/lib/shady-render.js",
     "revision": "6f7e199cd1cf7c2ae9bf6eba7a8c12c7"
