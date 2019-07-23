@@ -91,14 +91,14 @@ class TwitPic extends LitElement {
                 console.log("Error on getting image", error)
             });
             //metadata
-            let newMetadata = {
-                cacheControl: 'public,max-age=3153600'
-            }
-            firestorage.ref(this.ref).updateMetadata(newMetadata).then(function (metadata) {
-                console.log("cache metadata updated");
-            }).catch(function (error) {
-                console.log("error on cache metadata update : ",error);
-            });
+            // let newMetadata = {
+            //     cacheControl: 'public,max-age=3153600'
+            // }
+            // firestorage.ref(this.ref).updateMetadata(newMetadata).then(function (metadata) {
+            //     console.log("cache metadata updated");
+            // }).catch(function (error) {
+            //     console.log("error on cache metadata update : ",error);
+            // });
         }
         return html`
         <style>
