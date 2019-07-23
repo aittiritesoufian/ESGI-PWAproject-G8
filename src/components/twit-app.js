@@ -75,10 +75,6 @@ class TwitApp extends LitElement {
         document.addEventListener('user-logged', (event) => {
             this.user = event.detail.user;
         });
-        document.addEventListener('sync', () => {
-            console.log('event listener sync called');
-            this.twitSync();
-        });
         checkConnectivity();
         if (this.connection) {
             console.log('online');

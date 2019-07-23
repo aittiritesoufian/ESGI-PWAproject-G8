@@ -100,21 +100,35 @@ class TwitNew extends LitElement {
                     await database.collection('tweets').add(data)
                         .then(async (docRef) => {
                             console.log("Tweet written with ID: ", docRef.id);
-                            await addTweetToFeed(docRef.id, data.date);
+                            // await addTweetToFeed(docRef.id, data.date);
+                            console.log('Adding tweet for followers feed');
+                            await firebase.firestore().collection('users').doc(author).get().then((doc) => {
+                                if (doc.exists) {
+                                    console.log("Document data:", doc.data());
+                                    // 2. iter on followers
+                                    doc.data().subscribers.forEach(follower => {
+                                        //for each follower, set in it doc in collection "feed", in collection tweets a doc with the current tweet reference and him date
+                                        firebase.firestore().collection('feed').doc(follower).collection('tweets').doc(docRef.id).set({
+                                            date: data.date
+                                        })
+                                    });
+                                    console.log('Tweet added to followers!');
+                                }
+                            });
                         })
                         .catch((error) => {
                             console.error("Error adding tweet: ", error);
                         });
                     console.log("Tweet with file sent");
-                    this.dispatchEvent(new CustomEvent('saved'));
-                    let myCustomMetadata = {
-                        customMetadata: {
-                            cacheControl: 'public,max-age=3153600',
-                        }
-                    }
-                    ref.updateMetadata(myCustomMetadata).then(() => {
-                        console.log("metadata set")
-                    })
+                    document.dispatchEvent(new CustomEvent('saved'));
+                    // let myCustomMetadata = {
+                    //     customMetadata: {
+                    //         cacheControl: 'public,max-age=3153600',
+                    //     }
+                    // }
+                    // ref.updateMetadata(myCustomMetadata).then(() => {
+                    //     console.log("metadata set")
+                    // })
                     window.location.replace('/');
                 }
             );
