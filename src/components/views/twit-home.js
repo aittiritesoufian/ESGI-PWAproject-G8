@@ -118,25 +118,6 @@ class TwitHome extends LitElement {
         setTimeout(() => {
             window.scrollTo(0, document.body.scrollHeight);
         }, 0);
-
-        // if (Notification.permission === 'granted') {
-        //     navigator.serviceWorker.ready
-        //     .then(registration => {
-        //         registration.pushManager.subscribe({
-        //             userVisibleOnly: true,
-        //             applicationServerKey: this.urlBase64ToUint8Array(document.config.publicKey)
-        //         }).then(async subscribtion => {
-        //             subscribtion.id = this.user.uid;
-        //             await fetch('http://localhost:8085/subscribe', {
-        //                 method: 'POST',
-        //                 headers: {
-        //                     'Content-Type': 'application/json',
-        //                 },
-        //                 body: JSON.stringify(subscribtion)
-        //             })
-        //         });
-        //     });
-        // }
     }
 
     getDate(timestamp) {
@@ -187,11 +168,14 @@ class TwitHome extends LitElement {
                     ` : html``
                 }
                 <h1>Hi, ${this.user.email}</h1>
-                <button @click="${this.subscribe}">Subscribe</button>
                 <h1>Tweets: </h1>
                 <ul>
                     ${this.tweets.map(tweet => html`
-                    <twit-element .id="${tweet.id}"></twit-element>
+                    ${
+                        tweet.id != "" ? html`
+                        <twit-element .id="${tweet.id}"></twit-element>
+                        ` : ""
+                    }
                     `)}
                 </ul>
                 `

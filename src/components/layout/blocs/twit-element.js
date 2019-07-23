@@ -169,6 +169,7 @@ class TwitElement extends LitElement {
         } else {
             this.like();
         }
+        document.dispatchEvent(new CustomEvent('sync'));
     }
 
     async retweet(){
@@ -234,7 +235,7 @@ class TwitElement extends LitElement {
             console.log("tweet deletion succeed");
         });
         console.log("Tweet " + this.tweet.id + " deleted");
-        // document.dispatchEvent(new CustomEvent('sync'));
+        document.dispatchEvent(new CustomEvent('sync'));
     }
 
 	render(){
