@@ -62,7 +62,7 @@ class TwitNew extends LitElement {
             let ref = 'tweets_pic/' + this.author + "/" + this.file[0].name;
             let storageRef = firestorage.ref(ref);
             let content = this.content;
-            // let author = this.author;
+            let author = this.author;
 
             // //upload file
             let task = storageRef.put(this.file[0]);
@@ -95,18 +95,26 @@ class TwitNew extends LitElement {
                 async function complete() {
                     console.log("upload complete");
                     data.attachment = ref;
-                    data.author = this.author;
+                    data.author = author;
                     const database = firebase.firestore();
                     await database.collection('tweets').add(data)
                         .then(async (docRef) => {
                             console.log("Tweet written with ID: ", docRef.id);
-                            await this.addTweetToFeed(docRef.id, data.date);
+                            await addTweetToFeed(docRef.id, data.date);
                         })
                         .catch((error) => {
                             console.error("Error adding tweet: ", error);
                         });
                     console.log("Tweet with file sent");
                     this.dispatchEvent(new CustomEvent('saved'));
+                    let myCustomMetadata = {
+                        customMetadata: {
+                            cacheControl: 'public,max-age=3153600',
+                        }
+                    }
+                    ref.updateMetadata(myCustomMetadata).then(() => {
+                        console.log("metadata set")
+                    })
                     window.location.replace('/');
                 }
             );
