@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import "./twit-pic.js";
 import 'firebase/storage';
 import { openDB } from '/node_modules/idb/build/esm/index.js';
 // import sync from '../../data/twit-sync.js';
@@ -35,11 +36,11 @@ class TwitNew extends LitElement {
 
     firstUpdated() {
         this.author = firebase.auth().currentUser.uid;
-        // document.addEventListener('user-logged', (event) => {
-        //     this.author = event.detail.user.uid;
-        //     console.log('current user on twit-new : ');
-        //     console.log(this.author);
-        // });
+        document.addEventListener('user-logged', (event) => {
+            this.author = event.detail.user.uid;
+            console.log('current user on twit-new : ');
+            console.log(this.author);
+        });
         document.addEventListener('connection-changed', (event) => {
             this.connection = event.detail;
         });
@@ -201,13 +202,24 @@ class TwitNew extends LitElement {
                 font-size: 20px;
                 
             }
-            img { 
-                border: 3px solid black;
-                border-radius: 15px;
-                width: 30px;
-                height: 30px;
-                
+            .icon-zone {
+                width: 50px;
+                height: 50px;
+                background-color: rgb(255, 255, 255);
+                position: relative;
+                border-radius: 50%;
+                overflow: hidden;
+                flex-direction: row;
+                align-items: center;
+                display: flex;
             }
+            .icon-zone > img {
+                width:100%;
+                height:100%;
+                position: relative;
+                display: block;
+            }
+            
 
         `;
     }
@@ -215,8 +227,20 @@ class TwitNew extends LitElement {
 	render(){
         return html`
             <form @submit="${this.handleTweet}">
-            <img src="${this.author.avatar}" />
-            <h1>${this.author.name}</h1>
+            <header>
+                        <a href="/profil/${this.author.slug}" style="text-decoration: none">
+                            <div class="icon-zone">
+                                ${
+                                    this.author.avatar ? html`
+                                        <twit-pic ref="${this.author.avatar}"></twit-pic>
+                                    `
+                                    : html `
+                                        <img src="/1f680.png"/>
+                                    `
+                                }
+                            </div>
+                        </a>
+                    </header>
 
                 <textarea placeholder="Quoi de neuf ?" @change="${e => this.content = e.target.value}">${this.content}</textarea>
                 <section class="actions">
